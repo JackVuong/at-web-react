@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
-import { Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select } from 'antd';
+import {Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select } from 'antd';
 import Loading from './Loading';
 import './App.css';
 import logo from './logo.png';
 import user from './user.png';
 import { getData, update, getLastIndex } from './firebase';
+import CreateSubjectForm from './CreateSubjectForm'
 
 const { Header, Content, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 const Option = Select.Option;
+const FormItem = Form.Item;
 
 class MainPage extends Component {
   constructor(props) {
@@ -56,18 +58,25 @@ class MainPage extends Component {
     });
   }
 
-  handleSaveSubject = (e) => {
-    getLastIndex(`MonHoc`).then((lastIndex) => this.addNewSubject(lastIndex))
+  handleSaveSubject = () => {
+    const form = this.form;
+    form.validateFields((err, values) => {
+      if (err) {
+        return;
+    }
+    form.resetFields();
+    getLastIndex(`MonHoc`).then((lastIndex) => this.addNewSubject(lastIndex,values.subjectCode,values.subjectName))
     this.setState({
       visible: false,
     });
+    });
   }
 
-  addNewSubject = (lastIndex) => {
+  addNewSubject = (lastIndex, code, name) => {
     let newIndex = parseInt(lastIndex) + 1
     let newSubject = {
-      MaMH: this.state.newSubjectCode,
-      TenMH: this.state.newSubjectName
+      MaMH: code,
+      TenMH: name
     }
     update(`MonHoc/${newIndex}`, newSubject)
     this.setState({
@@ -91,6 +100,8 @@ class MainPage extends Component {
   }
 
   handleCancel = (e) => {
+    const form = this.form;
+    form.resetFields();
     this.setState({
       visible: false,
     });
@@ -103,13 +114,6 @@ class MainPage extends Component {
 
   }
 
-  handleChangeSubjectCode = (e) => {
-    this.setState({ newSubjectCode: e.target.value })
-  }
-
-  handleChangeSubjectName = (e) => {
-    this.setState({ newSubjectName: e.target.value })
-  }
 
   handleChangeProgram = (checked) => {
     this.setState({ top100: checked })
@@ -139,11 +143,15 @@ class MainPage extends Component {
     this.setState({ to: value })
   }
 
+  saveFormRef = (form) => {
+    this.form = form;
+  }
+
   render() {
     if (this.state.loading) return <Loading />;
     return (
       <Layout style={{ height: '100%' }}>
-        <Header style={{ background: '#fff', padding: 0 }}>
+        <Header style={{ background: '#fff  ', padding: 0 }}>
           <Row type='flex' justify='space-between' style={{ height: '100%' }}>
             <Col span={4}>
               <img alt='logo' src={logo} style={{ height: 70, padding: 7 }} />
@@ -187,19 +195,14 @@ class MainPage extends Component {
           </Sider>
           <Layout>
             <Content style={{ margin: '0 16px' }}>
-              <Col>
+              <Col>                
                 <Button type='primary' onClick={this.showModalCreateSubject} style={{ height: 40, fontSize: 14 }}>Add new subject</Button>
-                <Modal title="Create new subject" visible={this.state.visible}
-                  onOk={this.handleSaveSubject} onCancel={this.handleCancel}
-                >
-                  <div style={{ marginBottom: 16 }}>
-                    <Input placeholder='Subject code' value={this.state.newSubjectCode} onChange={this.handleChangeSubjectCode} />
-                  </div>
-                  <div style={{ marginBottom: 10 }}>
-                    <Input placeholder='Subject name' value={this.state.newSubjectName} onChange={this.handleChangeSubjectName} />
-                  </div>
-
-                </Modal>
+                <CreateSubjectForm
+                ref={this.saveFormRef}
+                visible={this.state.visible}
+                onCancel={this.handleCancel}
+                onCreate={this.handleSaveSubject}
+                />
               </Col>
               <Col>
                 <Button type='primary' onClick={this.showModalCreateClass} style={{ height: 40, fontSize: 14 }}>Add new class</Button>
