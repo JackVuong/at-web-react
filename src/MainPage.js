@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
-import {Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select } from 'antd';
+import { Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select,message } from 'antd';
 import Loading from './Loading';
 import './App.css';
 import logo from './logo.png';
 import user from './user.png';
 import { getData, update, getLastIndex } from './firebase';
 import CreateSubjectForm from './CreateSubjectForm'
-
+import CreateClassForm from'./CreateClass'
 const { Header, Content, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 const Option = Select.Option;
 const FormItem = Form.Item;
-
+const success = () => {
+  message.success('Saved successfully');
+};
 class MainPage extends Component {
   constructor(props) {
     super(props);
@@ -63,12 +65,12 @@ class MainPage extends Component {
     form.validateFields((err, values) => {
       if (err) {
         return;
-    }
-    form.resetFields();
-    getLastIndex(`MonHoc`).then((lastIndex) => this.addNewSubject(lastIndex,values.subjectCode,values.subjectName))
-    this.setState({
-      visible: false,
-    });
+      }
+      form.resetFields();
+      getLastIndex(`MonHoc`).then((lastIndex) => this.addNewSubject(lastIndex, values.subjectCode, values.subjectName))
+      this.setState({
+        visible: false,
+      });
     });
   }
 
@@ -80,23 +82,49 @@ class MainPage extends Component {
     }
     update(`MonHoc/${newIndex}`, newSubject)
     this.setState({
-      newSubjectCode: null,
-      newSubjectName: null,
       subjects: {
         ...this.state.subjects,
         [newIndex]: newSubject
       }
     });
+    success()
   }
 
-  handleSaveClass = (e) => {
-    this.setState({
-      visible: false,
+  handleSaveClass = () => {
+    const form = this.form2;
+    form.validateFields((err, values) => {
+      if (err) {
+        return;
+      }
+      form.resetFields();
+      getLastIndex('Lop').then((lastIndex) => this.addNewClass(lastIndex, values))
+      success()
+      this.setState({
+        visiblePopupCreateClass: false,
+      });
     });
   }
 
-  addNewClass = (lastIndex) => {
+  addNewClass = (lastIndex, values) => {
     let newIndex = parseInt(lastIndex) + 1
+    console.log(values)
+    let newClass = {
+      GV:values.giangvien,
+      HocKy: values.hocky,
+      MaMH: values.monhoc,
+      NamHoc: values.namhoc,
+      NhomMH: values.nhom,
+      ToMH: values.to,
+      Top100: values.program
+    }
+    update(`Lop/${0}`, newClass)
+    this.setState({
+      classes: {
+        ...this.state.classes,
+        [newIndex]: newClass
+      }
+    });
+
   }
 
   handleCancel = (e) => {
@@ -108,43 +136,39 @@ class MainPage extends Component {
   }
 
   onCancel = (e) => {
+    const form = this.form2;
+    form.resetFields();
     this.setState({
       visiblePopupCreateClass: false,
     });
 
   }
 
-
-  handleChangeProgram = (checked) => {
-    this.setState({ top100: checked })
-  }
-
-  handleChangeHocKy = (value) => {
-    this.setState({ hocKy: value })
-  }
-
-  handleNamHoc = (e) => {
-    this.setState({ namHoc: e.target.value})
-  }
-
-  handleChangeMonHoc = (value) => {
-    this.setState({ monHoc: value })
-  }
-
-  handleChangeGiangVien = (value) => {
-    this.setState({ giangVien: value })
-  }
-
-  handleChangeNhom = (value) => {
-    this.setState({ nhom: value })
-  }
-
-  handleChangeTo = (value) => {
-    this.setState({ to: value })
-  }
-
   saveFormRef = (form) => {
     this.form = form;
+  }
+
+  saveForm2Ref = (form2) => {
+    this.form2 = form2;
+  }
+
+  handleUniqueCode = (rule, value, callback) => {
+    if (value && _.some(this.state.subjects, ['MaMH', value])) {
+      callback('Subject code should be unique ！')
+    }
+    callback()
+  }
+
+  validateGroupAndTeam = (rule, value, callback) => {
+    const form = this.form2;
+    let nhom = form.getFieldValue('nhom')
+    let to = form.getFieldValue('to')
+    let maMH = form.getFieldValue('monhoc')
+    console.log(_.some(this.state.classes, {'NhomMH':nhom,'ToMH':to,'MaMH':maMH}))
+    if (value && _.some(this.state.classes, {'NhomMH':nhom,'ToMH':to,'MaMH':maMH})) {
+      callback(`Group ${nhom} team ${to} is already exists in this subject `)
+    }
+    callback()
   }
 
   render() {
@@ -195,60 +219,26 @@ class MainPage extends Component {
           </Sider>
           <Layout>
             <Content style={{ margin: '0 16px' }}>
-              <Col>                
+              <Col>
                 <Button type='primary' onClick={this.showModalCreateSubject} style={{ height: 40, fontSize: 14 }}>Add new subject</Button>
                 <CreateSubjectForm
-                ref={this.saveFormRef}
-                visible={this.state.visible}
-                onCancel={this.handleCancel}
-                onCreate={this.handleSaveSubject}
+                  ref={this.saveFormRef}
+                  visible={this.state.visible}
+                  onCancel={this.handleCancel}
+                  onCreate={this.handleSaveSubject}
+                  handleUniqueCode={this.handleUniqueCode}
                 />
-              </Col>
-              <Col>
-                <Button type='primary' onClick={this.showModalCreateClass} style={{ height: 40, fontSize: 14 }}>Add new class</Button>
-                <Modal title="Create new class" visible={this.state.visiblePopupCreateClass}
-                  onOk={this.handleSaveClass} onCancel={this.onCancel}
-                >
-                  <Row type='flex' justify='space-between' style={{ height: '100%' }}>
-                    <Col>
-                      <div style={{ marginBottom: 16 }}>
-                        <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />} onChange={this.handleChangeProgram}/> Top 100 program
-                      </div>
-                      <div style={{ marginBottom: 16 }}>
-                        <Select defaultValue="HKI" style={{ width: 120 }} onChange={this.handleChangeHocKy}>
-                          <Option value="HK1">Học kỳ 1</Option>
-                          <Option value="HK2">Học kỳ 2</Option>
-                          <Option value="HK3">Học kỳ hè</Option>
-                          <Option value="HKDT1">Học kỳ dự thính 1</Option>
-                          <Option value="HKDT2">Học kỳ dự thính 2</Option>
-                          <Option value="other">Khác...</Option>
-                        </Select>
-                      </div>
-                      <div style={{ marginBottom: 16 }}>
-                        <Input placeholder="Nhập năm học" style={{ width: 215 }} onChange={this.handleNamHoc}/>
-                      </div>
-                    </Col>
-                    <Col>
-                      <div style={{ marginBottom: 16 }}>
-                        <Select defaultValue="Chọn một môn học" style={{ width: 215 }} onChange={this.handleChangeMonHoc}>
-                          {
-                            _.map(this.state.subjects, (subject) => <Option value={subject.MaMH}>{subject.TenMH}</Option>)
-                          }
-                        </Select>
-                      </div>
-                      <div style={{ marginBottom: 16 }}>
-                        <Select defaultValue="Chọn một giảng viên" style={{ width: 215 }} onChange={this.handleChangeGiangVien}>
-                          <Option value="0">Nguyễn Văn A</Option>
-                          <Option value="1">Nguyễn Văn B</Option>
-                          <Option value="2">Trần Thị C</Option>
-                        </Select>
-                      </div>                     
-                      <div style={{ marginBottom: 16 }}>
-                        Nhóm <InputNumber min={1} defaultValue={1} onChange={this.handleChangeNhom} /> Tổ <InputNumber min={1} defaultValue={1} onChange={this.handleChangeTo}/>
-                      </div>
-                    </Col>
-                  </Row>
-                </Modal>
+                <Button type='primary' onClick={this.showModalCreateClass} style={{ height: 40, fontSize: 14 }}>Add new Class</Button>
+                </Col>
+                <Col>
+                <CreateClassForm
+                  ref={this.saveForm2Ref}
+                  visible={this.state.visiblePopupCreateClass}
+                  onCancelCreateClass={this.onCancel}
+                  onCreateClass={this.handleSaveClass}
+                  subjects={this.state.subjects}
+                  validateGroupAndTeam={this.validateGroupAndTeam}
+                />
               </Col>
             </Content>
           </Layout>
