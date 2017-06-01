@@ -164,7 +164,6 @@ class MainPage extends Component {
     let nhom = form.getFieldValue('nhom')
     let to = form.getFieldValue('to')
     let maMH = form.getFieldValue('monhoc')
-    console.log(_.some(this.state.classes, {'NhomMH':nhom,'ToMH':to,'MaMH':maMH}))
     if (value && _.some(this.state.classes, {'NhomMH':nhom,'ToMH':to,'MaMH':maMH})) {
       callback(`Group ${nhom} team ${to} is already exists in this subject `)
     }

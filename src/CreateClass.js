@@ -2,7 +2,6 @@ import { Form, Icon, Input, Button, Modal, Switch, Select, InputNumber, Col, Row
 import React, { Component } from 'react';
 import _ from 'lodash';
 const FormItem = Form.Item;
-
 const CreateClassForm = Form.create()(
   (props) => {
     const { visible, onCancelCreateClass, onCreateClass, form, subjects, validateGroupAndTeam } = props;
@@ -73,12 +72,16 @@ const CreateClassForm = Form.create()(
             )}
             Tổ
             {getFieldDecorator('to',{initialValue: 1,
-              rules: [{ validator: validateGroupAndTeam }]})(
-              
-                <InputNumber min={1}>Tổ</InputNumber>
-              
-            )}
+              rules: [{ validator: validateGroupAndTeam }]})(            
+                <InputNumber min={1}/>          
+            )}            
           </FormItem>
+          <FormItem>
+            {getFieldDecorator('validate',{
+              rules: [{ validator: validateGroupAndTeam }]})(
+                <span/>                    
+            )} 
+            </FormItem>
           
           </Col>
           </Row>

@@ -20,4 +20,4 @@ export const getLastIndex = (part) => {
      return _.last(Object.keys(data))
    })
  }
-export default firebase;
+export default firebase
