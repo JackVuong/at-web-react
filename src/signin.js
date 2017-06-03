@@ -1,7 +1,7 @@
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button, Checkbox } from 'antd'
 import React, { Component } from 'react'
 import firebase from './firebase'
-import _ from 'lodash';
+import _ from 'lodash'
 const FormItem = Form.Item;
 
 class LoginForm extends React.Component {
