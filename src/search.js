@@ -63,12 +63,12 @@ class SearchPage extends Component {
                                 null
                                 :
                                 <Row>
-                                    <Timeline>
+                                    <Timeline style={{borderLeft: '#f77bed}'}}>
                                         {
-                                            _.forEach([this.state.data], (event) =>
+                                            _.map(this.state.data, (event) =>
                                                 <Timeline.Item color="green">
                                                     <p>{event.maLop}</p>
-                                                    <p>At {event.diaDiem}</p>
+                                                    <p>{event.diaDiem}</p>
                                                     <p>{event.ngayGio}</p>
                                                 </Timeline.Item>
                                             )

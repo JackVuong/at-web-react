@@ -1,6 +1,7 @@
 import { Timeline, Row } from 'antd'
 import React, { Component } from 'react'
 import _ from 'lodash';
+import './events.css'
 class EventTimline extends Component {
     constructor(props) {
         super(props);
