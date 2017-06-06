@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
-import { Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select,message } from 'antd';
+import {Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select, message, Dropdown} from 'antd';
 import Loading from './Loading';
 import './App.css';
 import logo from './logo.png';
 import user from './user.png';
+import firebase from './firebase'
 import { getData, update, getLastIndex } from './firebase';
 import CreateSubjectForm from './CreateSubjectForm'
 import CreateClassForm from'./CreateClass'
@@ -12,6 +13,23 @@ const { Header, Content, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 const Option = Select.Option;
 const FormItem = Form.Item;
+
+const onClickProfileMenu = function ({ key }) {
+  if(_.isEqual(key,'signout'))
+  {
+    firebase.auth().signOut();
+    window.location.replace('/')
+  }
+}
+
+const profileMenu = (
+  <Menu onClick={onClickProfileMenu}>
+    <Menu.Item key="info">Your profile</Menu.Item>
+    <Menu.Item key="settting">Setting</Menu.Item>
+    <Menu.Item key="signout">Sign out</Menu.Item>
+  </Menu>
+);
+
 const success = () => {
   message.success('Saved successfully');
 };
@@ -180,7 +198,9 @@ class MainPage extends Component {
               <img alt='logo' src={logo} style={{ height: 70, padding: 7 }} />
             </Col>
             <Col style={{ paddingRight: 20 }}>
+              <Dropdown overlay={profileMenu}>
               <img alt='user' src={user} style={{ height: 70, padding: 7 }} />
+              </Dropdown>
             </Col>
           </Row>
         </Header>

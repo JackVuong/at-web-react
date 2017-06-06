@@ -2,7 +2,8 @@ import logo from './logo.png'
 import { Form, Layout, Row, Col, Button, Input, message, BackTop, Icon, Timeline, Table} from 'antd';
 import React, { Component } from 'react'
 import _ from 'lodash'
-import './events.css';
+import './events.css'
+import './table.css';
 import Loading from './Loading';
 import { getData } from './firebase'
 import LoginForm from './signin'
@@ -10,14 +11,20 @@ const { Header, Content } = Layout;
 const WrappedLoginForm = Form.create()(LoginForm)
 const columns = [
     {
-        title:'ML',
-        dataIndex:'maLop',
-        key:'maLop'
+        title:'Tên môn học',
+        dataIndex:'TenMH'
     },
     {
-        title:'Date',
-        dataIndex:'ngayGio',
-        key:'ngayGio'
+        title:'Nhóm',
+        dataIndex:'NhomMH'
+    },
+    {
+        title:'Tổ',
+        dataIndex:'ToMH'
+    },
+    {
+        title:'Ngày giờ',
+        dataIndex:'ngayGio'
     }
 ]
 const rowSelection = {
@@ -64,11 +71,11 @@ class SearchPage extends Component {
 
     getDataSource = (data) => {
         let dataSource = []
-        let i = 0
          _.forEach(data, (item) => {           
              let object = {
-                 key : i++,
-                 maLop : item.maLop,
+                 TenMH : _.get(this.state.classes,`${item.maLop}.TenMH`),
+                 NhomMH: _.get(this.state.classes,`${item.maLop}.NhomMH`),
+                 ToMH: _.get(this.state.classes,`${item.maLop}.ToMH`),
                  ngayGio: item.ngayGio
              }
              dataSource.push(object)          
