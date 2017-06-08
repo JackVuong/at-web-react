@@ -3,7 +3,6 @@ import { Form, Layout, Row, Col, Button, Input, message, BackTop, Icon, Timeline
 import React, { Component } from 'react'
 import _ from 'lodash'
 import './events.css'
-import './table.css';
 import Loading from './Loading';
 import { getData } from './firebase'
 import LoginForm from './signin'
@@ -62,16 +61,17 @@ class SearchPage extends Component {
         
         const studentID = document.getElementById('studentId').value
         if (!_.isEmpty(studentID)) {
-            getData(`DiemDanh/SuKien/${studentID}`).then((dataEvents) => 
+            getData(`DiemDanh/SuKien`).then((dataEvents) => 
             this.setState({ 
-                dataEvents,
+                dataEvents:_.filter(dataEvents,['mssv',studentID]),
                 dataClass: null 
             }))}
     }
 
-    getDataSource = (data) => {
+    getDataSource = (data,studentId) => {
+        const filterData = _.filter(data,['mssv',studentId])
         let dataSource = []
-         _.forEach(data, (item) => {           
+         _.forEach(filterData, (item) => {           
              let object = {
                  TenMH : _.get(this.state.classes,`${item.maLop}.TenMH`),
                  NhomMH: _.get(this.state.classes,`${item.maLop}.NhomMH`),
@@ -89,8 +89,8 @@ class SearchPage extends Component {
     handleSearchClass = () => {
         const studentID = document.getElementById('studentId').value
         if (!_.isEmpty(studentID)) {
-            getData(`DiemDanh/Lop/${studentID}`).then((dataClass) => 
-             this.getDataSource(dataClass))}
+            getData(`DiemDanh/Lop`).then((dataClass) => 
+             this.getDataSource(dataClass,studentID))}
     }
 
 
@@ -136,7 +136,7 @@ class SearchPage extends Component {
                                 null
                                 :
                                 <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
-                                    <Timeline style={{ borderLeft: '#f77bed}' }}>
+                                    <Timeline>
                                         {
                                             _.map(this.state.dataEvents, (event) =>
                                                 <Timeline.Item color="green">

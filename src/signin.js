@@ -12,6 +12,7 @@ class LoginForm extends React.Component {
         firebase.auth().signInWithEmailAndPassword(values.email, values.password).catch(function(error) {
           alert(error.message)        
         });
+        console.log(firebase.auth().currentUser)
         if(_.isObject(firebase.auth().currentUser)) {
           window.location.replace('/#/home')
         }

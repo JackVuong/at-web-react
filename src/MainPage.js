@@ -1,23 +1,25 @@
-import React, { Component } from 'react';
-import _ from 'lodash';
-import {Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select, message, Dropdown} from 'antd';
-import Loading from './Loading';
-import './App.css';
-import logo from './logo.png';
-import user from './user.png';
+import React, { Component } from 'react'
+import _ from 'lodash'
+import {Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select, message, Dropdown} from 'antd'
+import Loading from './Loading'
+import './App.css'
+import './events.css'
+import logo from './logo.png'
+import user from './user.png'
 import firebase from './firebase'
-import { getData, update, getLastIndex } from './firebase';
+import { getData, update, getLastIndex } from './firebase'
 import CreateSubjectForm from './CreateSubjectForm'
 import CreateClassForm from'./CreateClass'
-const { Header, Content, Sider } = Layout;
-const SubMenu = Menu.SubMenu;
-const Option = Select.Option;
-const FormItem = Form.Item;
+import Attendance from './Attendance'
+const { Header, Content, Sider } = Layout
+const SubMenu = Menu.SubMenu
+const Option = Select.Option
+const FormItem = Form.Item
 
 const onClickProfileMenu = function ({ key }) {
   if(_.isEqual(key,'signout'))
   {
-    firebase.auth().signOut();
+    firebase.auth().signOut()
     window.location.replace('/')
   }
 }
@@ -31,7 +33,7 @@ const profileMenu = (
 );
 
 const success = () => {
-  message.success('Saved successfully');
+  message.success('Saved successfully')
 };
 class MainPage extends Component {
   constructor(props) {
@@ -46,11 +48,11 @@ class MainPage extends Component {
     };
   }
   componentDidMount() {
-    Promise.all([getData('MonHoc'), getData('Lop')])
-      .then(([subjects, classes]) => this.setState({
+    Promise.all([getData('MonHoc'), getData('Lop'),getData('DiemDanh')])
+      .then(([subjects, classes, diemdanh]) => this.setState({
         subjects,
         classes,
-        selectedSubject: _.first(subjects),
+        diemdanh,
         loading: false
       }));
   }
@@ -60,9 +62,9 @@ class MainPage extends Component {
       mode: collapsed ? 'vertical' : 'inline',
     });
   }
-  onSelectSubject = (e) => {
+  onSelectClass = (e) => {
     this.setState({
-      selectedSubject: e.key,
+      selectedClass: e.key,
     });
   }
 
@@ -125,8 +127,8 @@ class MainPage extends Component {
 
   addNewClass = (lastIndex, values) => {
     let newIndex = parseInt(lastIndex) + 1
-    console.log(values)
     let newClass = {
+      key: newIndex,
       GV:values.giangvien,
       HocKy: values.hocky,
       MaMH: values.monhoc,
@@ -135,7 +137,7 @@ class MainPage extends Component {
       ToMH: values.to,
       Top100: values.program
     }
-    update(`Lop/${0}`, newClass)
+    update(`Lop/${newIndex}`, newClass)
     this.setState({
       classes: {
         ...this.state.classes,
@@ -212,13 +214,15 @@ class MainPage extends Component {
           >
             <Menu theme="dark"
               mode={this.state.mode}
-              onClick={this.onSelectProfile}
               selectedKeys={[this.state.selectedProfile]}
               inlineIndent={10}
+              onClick={this.onSelectClass}
+              selectedKeys={[this.state.selectedClass]}
             >
               <SubMenu
                 key="sub1"
                 title={<span><Icon type="star" /><span className="nav-text">Subjects</span></span>}
+                
               >
                 {
                   _.map(this.state.subjects, (subject) => <SubMenu key={subject.MaMH} title={<span>{subject.TenMH}</span>}>
@@ -238,6 +242,7 @@ class MainPage extends Component {
           </Sider>
           <Layout>
             <Content style={{ margin: '0 16px' }}>
+              <Row>
               <Col>
                 <Button type='primary' onClick={this.showModalCreateSubject} style={{ height: 40, fontSize: 14 }}>Add new subject</Button>
                 <CreateSubjectForm
@@ -259,6 +264,14 @@ class MainPage extends Component {
                   validateGroupAndTeam={this.validateGroupAndTeam}
                 />
               </Col>
+              </Row>
+              <Row>
+                {
+                  _.isNil(this.state.selectedClass)?null:
+                  <Attendance diemdanh={this.state.diemdanh} maLop={this.state.selectedClass}/>
+                }
+              </Row>
+              
             </Content>
           </Layout>
         </Layout>
