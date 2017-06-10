@@ -1,5 +1,5 @@
 import logo from './logo.png'
-import {Row, Icon, Table} from 'antd'
+import {Row, Icon, Table, Butt} from 'antd'
 import React, { Component } from 'react'
 import _ from 'lodash'
 import './events.css'
@@ -7,11 +7,11 @@ import './table.css'
 
 const columns = [
     {
-        title:'MSSV',
+        title:'Student ID',
         dataIndex:'MSSV'
     },
     {
-        title:'Ngày giờ',
+        title:'Date',
         dataIndex:'ngayGio'
     }
 ]
@@ -38,7 +38,9 @@ class Attendance extends Component {
         const DataSource = this.getDataSource(data)
         return (
             <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
-                <Table columns={columns} dataSource={DataSource} />
+                <div id ='table_wrapper'>
+                <Table columns={columns} dataSource={DataSource} bordered />
+                </div>
             </Row>
         );
     }

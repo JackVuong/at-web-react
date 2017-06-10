@@ -190,6 +190,21 @@ class MainPage extends Component {
     callback()
   }
 
+  handleExportXls = () =>{
+    const maMH = _.get(this.state.classes,`${this.state.selectedClass}.MaMH`)
+    const nhomMH = _.get(this.state.classes,`${this.state.selectedClass}.NhomMH`)
+    const toMH = _.get(this.state.classes,`${this.state.selectedClass}.ToMH`)
+    const temMH = _.find(this.state.subjects,['MaMH',maMH]).TenMH
+    const data_type = 'data:application/vnd.ms-excel';
+    const table_div = document.getElementById('table_wrapper');
+    const table_html = table_div.outerHTML.replace(/ /g, '%20');
+
+    let a = document.createElement('a');
+    a.href = data_type + ', ' + table_html;
+    a.download = 'attendance_tracking_'+temMH+'_' + maMH+'_nhom'+nhomMH+'_to_'+toMH + '.xls';
+    a.click();
+  }
+
   render() {
     if (this.state.loading) return <Loading />;
     return (
@@ -220,8 +235,12 @@ class MainPage extends Component {
               selectedKeys={[this.state.selectedClass]}
             >
               <SubMenu
+                key="add"
+                title={<span><span className="nav-text">New subject</span><Icon type="plus-circle-o"/></span>}             
+              />
+              <SubMenu
                 key="sub1"
-                title={<span><Icon type="star" /><span className="nav-text">Subjects</span></span>}
+                title={<span><Icon type="star" /><span className="nav-text">Subjects </span></span>}
                 
               >
                 {
@@ -268,7 +287,12 @@ class MainPage extends Component {
               <Row>
                 {
                   _.isNil(this.state.selectedClass)?null:
+                  <div>                  
                   <Attendance diemdanh={this.state.diemdanh} maLop={this.state.selectedClass}/>
+                  <Row type='flex' justify='center'>
+                  <Button onClick={()=>this.handleExportXls()} >Export to xls</Button>
+                  </Row>
+                  </div>
                 }
               </Row>
               

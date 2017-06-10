@@ -1,13 +1,17 @@
 import logo from './logo.png'
+import './events.css'
 import { Form, Layout, Row, Col, Button, Input, message, BackTop, Icon, Timeline, Table} from 'antd';
 import React, { Component } from 'react'
 import _ from 'lodash'
-import './events.css'
 import Loading from './Loading';
 import { getData } from './firebase'
 import LoginForm from './signin'
+import ReCAPTCHA from 'react-google-recaptcha'
 const { Header, Content } = Layout;
 const WrappedLoginForm = Form.create()(LoginForm)
+const info = () => {
+  message.info('Make sure you are human');
+}
 const columns = [
     {
         title:'Tên môn học',
@@ -42,6 +46,7 @@ class SearchPage extends Component {
         this.state = {
             dataEvents: null,
             dataClass: null,
+            reCaptcha:null,
             loading: true
         };
     }
@@ -58,7 +63,8 @@ class SearchPage extends Component {
 
 
     handleSearchEvent = () => {
-        
+        if(this.state.reCaptcha) {
+            this.setState({reCaptcha:null})
         const studentID = document.getElementById('studentId').value
         if (!_.isEmpty(studentID)) {
             getData(`DiemDanh/SuKien`).then((dataEvents) => 
@@ -66,6 +72,9 @@ class SearchPage extends Component {
                 dataEvents:_.filter(dataEvents,['mssv',studentID]),
                 dataClass: null 
             }))}
+        } else{
+            info()
+        }
     }
 
     getDataSource = (data,studentId) => {
@@ -87,12 +96,20 @@ class SearchPage extends Component {
     }
 
     handleSearchClass = () => {
+        if(this.state.reCaptcha) {
+            this.setState({reCaptcha:null})
         const studentID = document.getElementById('studentId').value
         if (!_.isEmpty(studentID)) {
+
             getData(`DiemDanh/Lop`).then((dataClass) => 
              this.getDataSource(dataClass,studentID))}
+        } else{
+            info()
+        }
+        
     }
 
+    handleRecapcha = (value) => this.setState({reCaptcha:value})
 
     render() {
         if (this.state.loading) return <Loading />;
@@ -118,6 +135,18 @@ class SearchPage extends Component {
                             <Input id='studentId' style={{ width: 500, height: 40, marginTop: 10 }}
                                 placeholder='Input your student ID here to search your attendance'
                             />
+                            </Row>
+                            <Row type='flex' justify='center' style={{ marginTop: 10 }}>
+                        {
+                            _.isNil(this.state.reCaptcha)?
+                            <ReCAPTCHA
+                            ref='recaptcha'
+                            sitekey='6Le-7iQUAAAAAEWJmV2u2jOeQj2SXHxh3zAn-a44'
+                            onChange={(value)=>this.handleRecapcha(value)}
+                        />
+                        :
+                        null
+                        }                      
                         </Row>
                         <Row type='flex' justify='center' style={{ height: '100%', marginTop: 10 }} >
                             <Button style={{ background: '#dce0e5', height: 40, width: 120 }}
@@ -136,7 +165,7 @@ class SearchPage extends Component {
                                 null
                                 :
                                 <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
-                                    <Timeline>
+                                    <Timeline style={{borderLeft:'2px solid #4df704'}}>
                                         {
                                             _.map(this.state.dataEvents, (event) =>
                                                 <Timeline.Item color="green">
@@ -155,7 +184,7 @@ class SearchPage extends Component {
                                 null
                                 :
                                 <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
-                                    <Table columns={columns} dataSource={this.state.dataClass} />
+                                    <Table columns={columns} dataSource={this.state.dataClass} bordered style={{background:'white'}}/>
                                 </Row>
 
                         }

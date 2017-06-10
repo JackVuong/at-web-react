@@ -15,7 +15,6 @@ class RegistrationForm extends React.Component {
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
-                console.log(values.password)
                 firebase.auth().createUserWithEmailAndPassword(values.email, values.password).catch(function (error) {
                     const errorCode = error.code;
                     const errorMessage = error.message;
