@@ -235,10 +235,6 @@ class MainPage extends Component {
               selectedKeys={[this.state.selectedClass]}
             >
               <SubMenu
-                key="add"
-                title={<span><span className="nav-text">New subject</span><Icon type="plus-circle-o"/></span>}             
-              />
-              <SubMenu
                 key="sub1"
                 title={<span><Icon type="star" /><span className="nav-text">Subjects </span></span>}
                 

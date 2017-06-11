@@ -1,5 +1,5 @@
 import logo from './logo.png'
-import {Row, Icon, Table, Butt} from 'antd'
+import {Row, Icon, Table, Tag} from 'antd'
 import React, { Component } from 'react'
 import _ from 'lodash'
 import './events.css'
@@ -12,7 +12,12 @@ const columns = [
     },
     {
         title:'Date',
-        dataIndex:'ngayGio'
+        dataIndex:'date',
+        render: text => <Tag color="blue">{text}</Tag>
+    },
+    {
+        title:'Total',
+        dataIndex:'total'
     }
 ]
 
@@ -21,12 +26,21 @@ class Attendance extends Component {
         super(props);
     }
 
+    getDate = (item) => {
+        let date =''
+        _.forEach(item,(i)=>{
+            date = date+ i.ngayGio + '\n'
+        })
+        return date
+    }
+
     getDataSource =(data) =>{
         let dataSource = []
-         _.forEach(data, (item) => {           
+         _.forEach(data, (item,key) => {           
              let object = {
-                 MSSV: item.mssv,
-                 ngayGio: item.ngayGio
+                 MSSV: key,
+                 date: this.getDate(item),
+                 total: _.size(item)
              }
              dataSource.push(object)          
          })
@@ -34,7 +48,7 @@ class Attendance extends Component {
     }
 
     render() {
-        const data = _.filter(this.props.diemdanh.Lop,['maLop',this.props.maLop])
+        const data = _.groupBy(_.filter(this.props.diemdanh.Lop,['maLop',this.props.maLop]),'mssv')
         const DataSource = this.getDataSource(data)
         return (
             <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
