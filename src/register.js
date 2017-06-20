@@ -80,7 +80,7 @@ class RegistrationForm extends React.Component {
 
         return (
             <div style={{ padding: '30px' }}>
-                <Card title="Register" style={{ width: '50%' }}>
+                <Card title="Register" style={{ width: '50%', margin:'0 auto'}}>
                     <Form onSubmit={this.handleSubmit}>
                         <FormItem
                             {...formItemLayout}
@@ -146,24 +146,7 @@ class RegistrationForm extends React.Component {
                                 <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} />
                                 )}
                         </FormItem>
-                        <FormItem
-                            {...formItemLayout}
-                            label="Captcha"
-                            extra="We must make sure that your are a human."
-                        >
-                            <Row gutter={8}>
-                                <Col span={12}>
-                                    {getFieldDecorator('captcha', {
-                                        rules: [{ required: true, message: 'Please input the captcha you got!' }],
-                                    })(
-                                        <Input size="large" />
-                                        )}
-                                </Col>
-                                <Col span={12}>
-                                    <Button size="large">Get captcha</Button>
-                                </Col>
-                            </Row>
-                        </FormItem>
+                        
                         <FormItem {...tailFormItemLayout} style={{ marginBottom: 8 }}>
                             {getFieldDecorator('agreement', {
                                 valuePropName: 'checked',

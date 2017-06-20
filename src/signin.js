@@ -1,4 +1,4 @@
-import { Form, Icon, Input, Button, Checkbox, Alert} from 'antd'
+import { Form, Icon, Input, Button, Checkbox, Alert, Card} from 'antd'
 import React, { Component } from 'react'
 import firebase from './firebase'
 import _ from 'lodash'
@@ -47,7 +47,9 @@ class LoginForm extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form onSubmit={this.handleSubmit} className="login-form" layout="inline">
+      <div style={{ paddingTop:'120' }}>
+      <Card title="Login" style={{ width: '30%', margin:'0 auto'}}>
+      <Form onSubmit={this.handleSubmit} className="login-form">
         <FormItem>
           {getFieldDecorator('email', {
             rules: [{ required: true, message: 'Please input your email!' }],
@@ -63,10 +65,12 @@ class LoginForm extends React.Component {
           )}
         </FormItem>
         <FormItem>
-          <Button type="primary" htmlType="submit" className="login-form-button">
+          <Button style={{width: '100%'}} type="primary" htmlType="submit" className="login-form-button">
             Log in
           </Button>
-          <a style={{ marginLeft: 10 }} href="/#/register"> Register now!</a>
+            <br/>
+            Or
+            <a href="/#/register"> register now!</a>
         </FormItem>
         {
           (_.isNil(this.state.haveErrors))?null:
@@ -80,6 +84,8 @@ class LoginForm extends React.Component {
         }
               
       </Form>
+      </Card>
+      </div>
     );
   }
 }

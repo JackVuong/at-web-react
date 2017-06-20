@@ -134,8 +134,7 @@ class MainPage extends Component {
       MaMH: values.monhoc,
       NamHoc: values.namhoc,
       NhomMH: values.nhom,
-      ToMH: values.to,
-      Top100: values.program
+      ToMH: values.to
     }
     update(`Lop/${newIndex}`, newClass)
     this.setState({

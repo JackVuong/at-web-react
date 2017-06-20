@@ -18,12 +18,6 @@ const CreateClassForm = Form.create()(
           <Row type='flex' justify='space-between' style={{ height: '100%' }}>
             <Col>
           <FormItem>
-            {getFieldDecorator('program',{initialValue: false})(
-              <Switch checkedChildren={<Icon type="check" />} unCheckedChildren={<Icon type="cross" />} />
-            )}
-            Top 100 program
-          </FormItem>
-          <FormItem>
             {getFieldDecorator('hocky',{initialValue: 'HK1'})(
               <Select style={{ width: 220 }}>
                 <Option value="HK1">Học kỳ 1</Option>

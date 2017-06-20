@@ -13,7 +13,8 @@ const columns = [
     {
         title:'Date',
         dataIndex:'date',
-        render: text => <Tag color="blue">{text}</Tag>
+        render: text => <div>{text}</div>
+        //render: text =><Tag color="cyan">{text}</Tag>       
     },
     {
         title:'Total',
@@ -29,7 +30,7 @@ class Attendance extends Component {
     getDate = (item) => {
         let date =''
         _.forEach(item,(i)=>{
-            date = date+ i.ngayGio + '\n'
+            date = date+ i.ngayGio + '<br/>'
         })
         return date
     }

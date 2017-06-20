@@ -7,7 +7,7 @@ import Loading from './Loading';
 import { getData } from './firebase'
 import LoginForm from './signin'
 import ReCAPTCHA from 'react-google-recaptcha'
-const { Header, Content } = Layout;
+const { Header, Content, Footer } = Layout;
 const WrappedLoginForm = Form.create()(LoginForm)
 const info = () => {
   message.info('Make sure you are human');
@@ -117,14 +117,6 @@ class SearchPage extends Component {
             <Layout style={{ height: '100%' }}>
                 <BackTop />
                 <Header style={{ background: '#011f49', padding: 0 }}>
-                    <Row type='flex' justify='space-between' style={{ height: '100%' }}>
-                        <Col span={4}>
-                            <img alt='logo' src={logo} style={{ height: 70, padding: 7 }} />
-                        </Col>
-                        <Col style={{ paddingRight: 20 }}>
-                            <WrappedLoginForm />
-                        </Col>
-                    </Row>
                 </Header>
                 <Layout>
                     <Content style={{ margin: '0 16px' }}>
@@ -189,6 +181,11 @@ class SearchPage extends Component {
 
                         }
                     </Content>
+                    <Footer style={{ textAlign: 'center' }}>
+                        Attendance Tracking ©2017 Created by dev team.
+                        <a href="/#/signin"> Signin</a> or
+                        <a href="/#/register"> register now!</a>
+                   </Footer>
                 </Layout>
             </Layout>);
     }
