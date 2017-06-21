@@ -79,8 +79,8 @@ class RegistrationForm extends React.Component {
         };
 
         return (
-            <div style={{ padding: '30px' }}>
-                <Card title="Register" style={{ width: '50%', margin:'0 auto'}}>
+            <div style={{ padding: '60px' }}>
+                <Card title="Register" style={{ width: '50%', margin:'0 auto',fontSize:15}}>
                     <Form onSubmit={this.handleSubmit}>
                         <FormItem
                             {...formItemLayout}

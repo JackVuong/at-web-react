@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import _ from 'lodash'
 import {Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select, message, Dropdown} from 'antd'
 import Loading from './Loading'
+import Forbidden from './Forbidden'
 import './App.css'
 import './events.css'
 import logo from './logo.png'
@@ -205,6 +206,8 @@ class MainPage extends Component {
   }
 
   render() {
+    if(_.isNil(firebase.auth().currentUser) || !firebase.auth().currentUser.emailVerified)
+      return<Forbidden/>;
     if (this.state.loading) return <Loading />;
     return (
       <Layout style={{ height: '100%' }}>
