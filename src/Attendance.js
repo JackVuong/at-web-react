@@ -13,12 +13,16 @@ const columns = [
     {
         title:'Date',
         dataIndex:'date',
-        render: text => <div>{text}</div>
-        //render: text =><Tag color="cyan">{text}</Tag>       
+        render: text => 
+        text.map((date)=>
+        <Tag color="cyan">{date.ngayGio}</Tag>
+    )
+ 
     },
     {
         title:'Total',
-        dataIndex:'total'
+        dataIndex:'total',
+        
     }
 ]
 
@@ -30,7 +34,7 @@ class Attendance extends Component {
     getDate = (item) => {
         let date =''
         _.forEach(item,(i)=>{
-            date = date+ i.ngayGio + '<br/>'
+            date = date+ i.ngayGio + ' '
         })
         return date
     }
@@ -40,7 +44,7 @@ class Attendance extends Component {
          _.forEach(data, (item,key) => {           
              let object = {
                  MSSV: key,
-                 date: this.getDate(item),
+                 date: item,
                  total: _.size(item)
              }
              dataSource.push(object)          
@@ -53,7 +57,7 @@ class Attendance extends Component {
         const DataSource = this.getDataSource(data)
         return (
             <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
-                <div id ='table_wrapper'>
+                <div id ='table_wrapper'>                 
                 <Table columns={columns} dataSource={DataSource} bordered />
                 </div>
             </Row>
