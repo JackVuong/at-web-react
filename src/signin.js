@@ -8,14 +8,15 @@ class LoginForm extends React.Component {
   constructor(props) {
         super(props);
         this.state = {
-            haveErrors: null
+            haveErrors: null,
+            loading: false
         }
     }
 
   
   handleSubmit = (e) => {
     e.preventDefault();
-    this.setState({haveErrors: null}) 
+    this.setState({haveErrors: null, loading:true}) 
     this.props.form.validateFields((err, values) => {
       if (!err) {
         firebase.auth().signInWithEmailAndPassword(values.email, values.password).catch((error)=> {
@@ -34,13 +35,17 @@ class LoginForm extends React.Component {
             } else{
               this.setState({
                 haveErrors: true,
-                message: 'This account still not activated, please check your mail and activate it'
+                message: 'This account still not activated, please check your mail and activate it',
+                loading: false
               })
             }
             
           }})
         
             
+      }
+      else{
+        this.setState({loading:false})
       }
     });
   }
@@ -67,6 +72,13 @@ class LoginForm extends React.Component {
         <FormItem>
           <Button style={{width: '100%'}} type="primary" htmlType="submit" className="login-form-button">
             Log in
+          {
+            (this.state.loading)?
+            <Icon type="loading"/>
+            :
+            null
+          }
+          
           </Button>
             <br/>
             Or

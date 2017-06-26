@@ -237,7 +237,7 @@ class MainPage extends Component {
               selectedKeys={[this.state.selectedClass]}
             >
               <SubMenu
-                key="sub1"
+                key="subject"
                 title={<span><Icon type="star" /><span className="nav-text">Subjects </span></span>}
                 
               >
@@ -248,6 +248,12 @@ class MainPage extends Component {
                     }
                   </SubMenu>)
                 }
+              </SubMenu>
+              <SubMenu
+                key="event"
+                title={<span><Icon type="flag" /><span className="nav-text">Events </span></span>}
+                
+              >
               </SubMenu>
               <Menu.Item key='Report'>
                 <span>
