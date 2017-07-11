@@ -216,10 +216,12 @@ class MainPage extends Component {
             <Col span={4}>
               <img alt='logo' src={logo} style={{ height: 70, padding: 7 }} />
             </Col>
-            <Col style={{ paddingRight: 20 }}>
+            <Col style={{ paddingRight: 20 }}>       
+            Luan Vuong     
               <Dropdown overlay={profileMenu}>
               <img alt='user' src={user} style={{ height: 70, padding: 7 }} />
               </Dropdown>
+              
             </Col>
           </Row>
         </Header>
@@ -267,15 +269,20 @@ class MainPage extends Component {
             <Content style={{ margin: '0 16px' }}>
               <Row>
               <Col>
-                <Button type='primary' onClick={this.showModalCreateSubject} style={{ height: 40, fontSize: 14 }}>Add new subject</Button>
+                <Row type='flex' justify='left' style={{ padding: '15px 10px 10px' }}>
+                  <Button type='primary' onClick={this.showModalCreateSubject} style={{height: 40, fontSize: 15}}><Icon type="plus-circle-o" style={{fontSize:18}} />Add subject</Button>
+                  
+                  <Button type='primary' onClick={this.showModalCreateClass} style={{height: 40, fontSize: 15, marginLeft:20 }}><Icon type="plus-circle-o" style={{fontSize:18}}/>Add Class</Button>
+                </Row>
+                
                 <CreateSubjectForm
                   ref={this.saveFormRef}
                   visible={this.state.visible}
                   onCancel={this.handleCancel}
                   onCreate={this.handleSaveSubject}
                   handleUniqueCode={this.handleUniqueCode}
-                />
-                <Button type='primary' onClick={this.showModalCreateClass} style={{ height: 40, fontSize: 14 }}>Add new Class</Button>
+                />             
+                
                 </Col>
                 <Col>
                 <CreateClassForm
@@ -287,6 +294,7 @@ class MainPage extends Component {
                   validateGroupAndTeam={this.validateGroupAndTeam}
                 />
               </Col>
+              
               </Row>
               <Row>
                 {

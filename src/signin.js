@@ -36,7 +36,7 @@ class LoginForm extends React.Component {
               this.setState({
                 haveErrors: true,
                 message: 'This account still not activated, please check your mail and activate it',
-                loading: false
+                loading: false 
               })
             }
             
@@ -50,6 +50,11 @@ class LoginForm extends React.Component {
     });
   }
   render() {
+    {
+      if(firebase.auth().currentUser){
+              window.location.replace('/#/home')
+      } 
+    }
     const { getFieldDecorator } = this.props.form;
     return (
       <div style={{ paddingTop:'120' }}>
