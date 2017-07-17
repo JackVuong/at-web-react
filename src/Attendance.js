@@ -1,5 +1,5 @@
 import logo from './logo.png'
-import {Row, Icon, Table, Tag} from 'antd'
+import { Row, Icon, Table, Tag, Tooltip, Button, Col } from 'antd'
 import React, { Component } from 'react'
 import _ from 'lodash'
 import './events.css'
@@ -7,22 +7,22 @@ import './table.css'
 
 const columns = [
     {
-        title:'Student ID',
-        dataIndex:'MSSV'
+        title: 'Student ID',
+        dataIndex: 'MSSV'
     },
     {
-        title:'Date',
-        dataIndex:'date',
-        render: text => 
-        text.map((date)=>
-        <Tag color="cyan">{date.ngayGio}</Tag>
-    )
- 
+        title: 'Date',
+        dataIndex: 'date',
+        render: text =>
+            text.map((date) =>
+                <Tag color="cyan">{date.ngayGio}</Tag>
+            )
+
     },
     {
-        title:'Total',
-        dataIndex:'total',
-        
+        title: 'Total',
+        dataIndex: 'total',
+
     }
 ]
 
@@ -32,35 +32,52 @@ class Attendance extends Component {
     }
 
     getDate = (item) => {
-        let date =''
-        _.forEach(item,(i)=>{
-            date = date+ i.ngayGio + ' '
+        let date = ''
+        _.forEach(item, (i) => {
+            date = date + i.ngayGio + ' '
         })
         return date
     }
 
-    getDataSource =(data) =>{
+    getDataSource = (data) => {
         let dataSource = []
-         _.forEach(data, (item,key) => {           
-             let object = {
-                 MSSV: key,
-                 date: item,
-                 total: _.size(item)
-             }
-             dataSource.push(object)          
-         })
-         return dataSource
+        _.forEach(data, (item, key) => {
+            let object = {
+                MSSV: key,
+                date: item,
+                total: _.size(item)
+            }
+            dataSource.push(object)
+        })
+        return dataSource
     }
 
     render() {
-        const data = _.groupBy(_.filter(this.props.diemdanh.Lop,['maLop',this.props.maLop]),'mssv')
+        const data = _.groupBy(_.filter(this.props.diemdanh.Lop, ['maLop', this.props.maLop]), 'mssv')
         const DataSource = this.getDataSource(data)
         return (
-            <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
-                <div id ='table_wrapper'>                 
-                <Table columns={columns} dataSource={DataSource} bordered />
-                </div>
-            </Row>
+            <div style={{ marginTop: 20 }}>
+                <Row type='flex' style={{ height: '100%' }} >
+
+                    <label style={{ fontSize: 25 }}>{this.props.currentClass.tenMH} nhóm {this.props.currentClass.nhomMH} tổ {this.props.currentClass.toMH}</label>
+                    
+                        <div>
+                            <Tooltip title="Edit this class">
+                                <Button type="primary" ghost shape="circle" icon="edit" size='large' style={{ marginBottom: 10, marginLeft: 5 }} />
+                            </Tooltip>
+                            <Tooltip title="Delete this class">
+                                <Button type="danger" ghost shape="circle" icon="close-circle" size='large' style={{ marginBottom: 10, marginLeft: 5 }} />
+                            </Tooltip>
+                        </div>
+                    
+
+                </Row>
+                <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
+                    <div id='table_wrapper'>
+                        <Table columns={columns} dataSource={DataSource} bordered />
+                    </div>
+                </Row>
+            </div>
         );
     }
 }

@@ -49,11 +49,12 @@ class MainPage extends Component {
     };
   }
   componentDidMount() {
-    Promise.all([getData('MonHoc'), getData('Lop'),getData('DiemDanh')])
-      .then(([subjects, classes, diemdanh]) => this.setState({
+    Promise.all([getData('MonHoc'), getData('Lop'),getData('DiemDanh'), getData('SuKien')])
+      .then(([subjects, classes, diemdanh, events]) => this.setState({
         subjects,
         classes,
         diemdanh,
+        events,
         loading: false
       }));
   }
@@ -64,8 +65,14 @@ class MainPage extends Component {
     });
   }
   onSelectClass = (e) => {
+    const maMH = _.get(this.state.classes,`${e.key}.MaMH`)
+    const nhomMH = _.get(this.state.classes,`${e.key}.NhomMH`)
+    const toMH = _.get(this.state.classes,`${e.key}.ToMH`)
+    const tenMH = _.find(this.state.subjects,['MaMH',maMH]).TenMH
+    const currentClass={maMH,nhomMH,toMH,tenMH}
     this.setState({
       selectedClass: e.key,
+      currentClass
     });
   }
 
@@ -191,17 +198,15 @@ class MainPage extends Component {
   }
 
   handleExportXls = () =>{
-    const maMH = _.get(this.state.classes,`${this.state.selectedClass}.MaMH`)
-    const nhomMH = _.get(this.state.classes,`${this.state.selectedClass}.NhomMH`)
-    const toMH = _.get(this.state.classes,`${this.state.selectedClass}.ToMH`)
-    const temMH = _.find(this.state.subjects,['MaMH',maMH]).TenMH
+    
     const data_type = 'data:application/vnd.ms-excel';
     const table_div = document.getElementById('table_wrapper');
     const table_html = table_div.outerHTML.replace(/ /g, '%20');
 
     let a = document.createElement('a');
     a.href = data_type + ', ' + table_html;
-    a.download = 'attendance_tracking_'+temMH+'_' + maMH+'_nhom'+nhomMH+'_to_'+toMH + '.xls';
+    a.download = 'attendance_tracking_'+this.state.currentClass.tenMH+'_' + this.state.currentClass.maMH+'_nhom'
+    +this.state.currentClass.nhomMH+'_to_'+this.state.currentClass.toMH + '.xls';
     a.click();
   }
 
@@ -215,6 +220,27 @@ class MainPage extends Component {
           <Row type='flex' justify='space-between' style={{ height: '100%' }}>
             <Col span={4}>
               <img alt='logo' src={logo} style={{ height: 70, padding: 7 }} />
+            </Col>
+            <Col>
+            <Button type='primary' onClick={this.showModalCreateSubject} style={{height: 40, fontSize: 15}}><Icon type="plus-circle-o" style={{fontSize:18}} />Add subject</Button>
+                  
+            <Button type='primary' onClick={this.showModalCreateClass} style={{height: 40, fontSize: 15, marginLeft:20 }}><Icon type="plus-circle-o" style={{fontSize:18}}/>Add Class</Button>
+            <CreateSubjectForm
+                  ref={this.saveFormRef}
+                  visible={this.state.visible}
+                  onCancel={this.handleCancel}
+                  onCreate={this.handleSaveSubject}
+                  handleUniqueCode={this.handleUniqueCode}
+                />             
+
+                <CreateClassForm
+                  ref={this.saveForm2Ref}
+                  visible={this.state.visiblePopupCreateClass}
+                  onCancelCreateClass={this.onCancel}
+                  onCreateClass={this.handleSaveClass}
+                  subjects={this.state.subjects}
+                  validateGroupAndTeam={this.validateGroupAndTeam}
+                />
             </Col>
             <Col style={{ paddingRight: 20 }}>       
             Luan Vuong     
@@ -253,9 +279,12 @@ class MainPage extends Component {
               </SubMenu>
               <SubMenu
                 key="event"
-                title={<span><Icon type="flag" /><span className="nav-text">Events </span></span>}
-                
+                title={<span><Icon type="flag" /><span className="nav-text">Events </span></span>}             
               >
+              {
+                  _.map(this.state.events, (event) => <SubMenu key={event.key} title={<span>{event.tenSuKien}</span>}>
+                  </SubMenu>)
+                }
               </SubMenu>
               <Menu.Item key='Report'>
                 <span>
@@ -267,40 +296,14 @@ class MainPage extends Component {
           </Sider>
           <Layout>
             <Content style={{ margin: '0 16px' }}>
-              <Row>
-              <Col>
-                <Row type='flex' justify='left' style={{ padding: '15px 10px 10px' }}>
-                  <Button type='primary' onClick={this.showModalCreateSubject} style={{height: 40, fontSize: 15}}><Icon type="plus-circle-o" style={{fontSize:18}} />Add subject</Button>
-                  
-                  <Button type='primary' onClick={this.showModalCreateClass} style={{height: 40, fontSize: 15, marginLeft:20 }}><Icon type="plus-circle-o" style={{fontSize:18}}/>Add Class</Button>
-                </Row>
+                          
                 
-                <CreateSubjectForm
-                  ref={this.saveFormRef}
-                  visible={this.state.visible}
-                  onCancel={this.handleCancel}
-                  onCreate={this.handleSaveSubject}
-                  handleUniqueCode={this.handleUniqueCode}
-                />             
-                
-                </Col>
-                <Col>
-                <CreateClassForm
-                  ref={this.saveForm2Ref}
-                  visible={this.state.visiblePopupCreateClass}
-                  onCancelCreateClass={this.onCancel}
-                  onCreateClass={this.handleSaveClass}
-                  subjects={this.state.subjects}
-                  validateGroupAndTeam={this.validateGroupAndTeam}
-                />
-              </Col>
-              
-              </Row>
+
               <Row>
                 {
                   _.isNil(this.state.selectedClass)?null:
                   <div>                  
-                  <Attendance diemdanh={this.state.diemdanh} maLop={this.state.selectedClass}/>
+                  <Attendance diemdanh={this.state.diemdanh} maLop={this.state.selectedClass} currentClass={this.state.currentClass}/>
                   <Row type='flex' justify='center'>
                   <Button onClick={()=>this.handleExportXls()} >Export to xls</Button>
                   </Row>
