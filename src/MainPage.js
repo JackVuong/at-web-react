@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
-import {Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select, message, Dropdown} from 'antd'
+import { Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select, message, Dropdown } from 'antd'
 import Loading from './Loading'
 import Forbidden from './Forbidden'
 import './App.css'
@@ -10,7 +10,7 @@ import user from './user.png'
 import firebase from './firebase'
 import { getData, update, getLastIndex } from './firebase'
 import CreateSubjectForm from './CreateSubjectForm'
-import CreateClassForm from'./CreateClass'
+import CreateClassForm from './CreateClass'
 import Attendance from './Attendance'
 const { Header, Content, Sider } = Layout
 const SubMenu = Menu.SubMenu
@@ -18,8 +18,7 @@ const Option = Select.Option
 const FormItem = Form.Item
 
 const onClickProfileMenu = function ({ key }) {
-  if(_.isEqual(key,'signout'))
-  {
+  if (_.isEqual(key, 'signout')) {
     firebase.auth().signOut()
     window.location.replace('/')
   }
@@ -49,7 +48,7 @@ class MainPage extends Component {
     };
   }
   componentDidMount() {
-    Promise.all([getData('MonHoc'), getData('Lop'),getData('DiemDanh'), getData('SuKien')])
+    Promise.all([getData('MonHoc'), getData('Lop'), getData('DiemDanh'), getData('SuKien')])
       .then(([subjects, classes, diemdanh, events]) => this.setState({
         subjects,
         classes,
@@ -65,15 +64,27 @@ class MainPage extends Component {
     });
   }
   onSelectClass = (e) => {
-    const maMH = _.get(this.state.classes,`${e.key}.MaMH`)
-    const nhomMH = _.get(this.state.classes,`${e.key}.NhomMH`)
-    const toMH = _.get(this.state.classes,`${e.key}.ToMH`)
-    const tenMH = _.find(this.state.subjects,['MaMH',maMH]).TenMH
-    const currentClass={maMH,nhomMH,toMH,tenMH}
-    this.setState({
-      selectedClass: e.key,
-      currentClass
-    });
+    if(_.startsWith(e.key, 'event')) {
+      const key = _.toNumber(_.trim(e.key,'event'))
+      const eventName =  _.find(this.state.events, ['key', key]).tenSuKien
+      const place = _.find(this.state.events, ['key', key]).diaDiem
+      const currentClass = {eventName,place}
+      this.setState({
+        selectedClass: key,
+        currentClass
+      })
+    } else {
+      const maMH = _.get(this.state.classes, `${e.key}.MaMH`)
+      const nhomMH = _.get(this.state.classes, `${e.key}.NhomMH`)
+      const toMH = _.get(this.state.classes, `${e.key}.ToMH`)
+      const tenMH = _.find(this.state.subjects, ['MaMH', maMH]).TenMH
+      const currentClass = { maMH, nhomMH, toMH, tenMH }
+      this.setState({
+        selectedClass: e.key,
+        currentClass
+      })
+    }
+
   }
 
   showModalCreateSubject = () => {
@@ -137,7 +148,7 @@ class MainPage extends Component {
     let newIndex = parseInt(lastIndex) + 1
     let newClass = {
       key: newIndex,
-      GV:values.giangvien,
+      GV: values.giangvien,
       HocKy: values.hocky,
       MaMH: values.monhoc,
       NamHoc: values.namhoc,
@@ -191,28 +202,28 @@ class MainPage extends Component {
     let nhom = form.getFieldValue('nhom')
     let to = form.getFieldValue('to')
     let maMH = form.getFieldValue('monhoc')
-    if (value && _.some(this.state.classes, {'NhomMH':nhom,'ToMH':to,'MaMH':maMH})) {
+    if (value && _.some(this.state.classes, { 'NhomMH': nhom, 'ToMH': to, 'MaMH': maMH })) {
       callback(`Group ${nhom} team ${to} is already exists in this subject `)
     }
     callback()
   }
 
-  handleExportXls = () =>{
-    
+  handleExportXls = () => {
+
     const data_type = 'data:application/vnd.ms-excel';
     const table_div = document.getElementById('table_wrapper');
     const table_html = table_div.outerHTML.replace(/ /g, '%20');
 
     let a = document.createElement('a');
     a.href = data_type + ', ' + table_html;
-    a.download = 'attendance_tracking_'+this.state.currentClass.tenMH+'_' + this.state.currentClass.maMH+'_nhom'
-    +this.state.currentClass.nhomMH+'_to_'+this.state.currentClass.toMH + '.xls';
+    a.download = 'attendance_tracking_' + this.state.currentClass.tenMH + '_' + this.state.currentClass.maMH + '_nhom'
+      + this.state.currentClass.nhomMH + '_to_' + this.state.currentClass.toMH + '.xls';
     a.click();
   }
 
   render() {
-    if(_.isNil(firebase.auth().currentUser) || !firebase.auth().currentUser.emailVerified)
-      return<Forbidden/>;
+    if (_.isNil(firebase.auth().currentUser) || !firebase.auth().currentUser.emailVerified)
+      return <Forbidden />;
     if (this.state.loading) return <Loading />;
     return (
       <Layout style={{ height: '100%' }}>
@@ -222,32 +233,32 @@ class MainPage extends Component {
               <img alt='logo' src={logo} style={{ height: 70, padding: 7 }} />
             </Col>
             <Col>
-            <Button type='primary' onClick={this.showModalCreateSubject} style={{height: 40, fontSize: 15}}><Icon type="plus-circle-o" style={{fontSize:18}} />Add subject</Button>
-                  
-            <Button type='primary' onClick={this.showModalCreateClass} style={{height: 40, fontSize: 15, marginLeft:20 }}><Icon type="plus-circle-o" style={{fontSize:18}}/>Add Class</Button>
-            <CreateSubjectForm
-                  ref={this.saveFormRef}
-                  visible={this.state.visible}
-                  onCancel={this.handleCancel}
-                  onCreate={this.handleSaveSubject}
-                  handleUniqueCode={this.handleUniqueCode}
-                />             
+              <Button type='primary' onClick={this.showModalCreateSubject} style={{ height: 40, fontSize: 15 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add subject</Button>
 
-                <CreateClassForm
-                  ref={this.saveForm2Ref}
-                  visible={this.state.visiblePopupCreateClass}
-                  onCancelCreateClass={this.onCancel}
-                  onCreateClass={this.handleSaveClass}
-                  subjects={this.state.subjects}
-                  validateGroupAndTeam={this.validateGroupAndTeam}
-                />
+              <Button type='primary' onClick={this.showModalCreateClass} style={{ height: 40, fontSize: 15, marginLeft: 20 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add Class</Button>
+              <CreateSubjectForm
+                ref={this.saveFormRef}
+                visible={this.state.visible}
+                onCancel={this.handleCancel}
+                onCreate={this.handleSaveSubject}
+                handleUniqueCode={this.handleUniqueCode}
+              />
+
+              <CreateClassForm
+                ref={this.saveForm2Ref}
+                visible={this.state.visiblePopupCreateClass}
+                onCancelCreateClass={this.onCancel}
+                onCreateClass={this.handleSaveClass}
+                subjects={this.state.subjects}
+                validateGroupAndTeam={this.validateGroupAndTeam}
+              />
             </Col>
-            <Col style={{ paddingRight: 20 }}>       
-            Luan Vuong     
+            <Col style={{ paddingRight: 20 }}>
+              Luan Vuong
               <Dropdown overlay={profileMenu}>
-              <img alt='user' src={user} style={{ height: 70, padding: 7 }} />
+                <img alt='user' src={user} style={{ height: 70, padding: 7 }} />
               </Dropdown>
-              
+
             </Col>
           </Row>
         </Header>
@@ -267,7 +278,7 @@ class MainPage extends Component {
               <SubMenu
                 key="subject"
                 title={<span><Icon type="star" /><span className="nav-text">Subjects </span></span>}
-                
+
               >
                 {
                   _.map(this.state.subjects, (subject) => <SubMenu key={subject.MaMH} title={<span>{subject.TenMH}</span>}>
@@ -279,11 +290,11 @@ class MainPage extends Component {
               </SubMenu>
               <SubMenu
                 key="event"
-                title={<span><Icon type="flag" /><span className="nav-text">Events </span></span>}             
+                title={<span><Icon type="flag" /><span className="nav-text">Events </span></span>}
               >
-              {
-                  _.map(this.state.events, (event) => <SubMenu key={event.key} title={<span>{event.tenSuKien}</span>}>
-                  </SubMenu>)
+                {
+                  _.map(this.state.events, (event) => <Menu.Item key={'event'+event.key}> {event.tenSuKien}
+                  </Menu.Item>)
                 }
               </SubMenu>
               <Menu.Item key='Report'>
@@ -296,21 +307,21 @@ class MainPage extends Component {
           </Sider>
           <Layout>
             <Content style={{ margin: '0 16px' }}>
-                          
-                
+
+
 
               <Row>
                 {
-                  _.isNil(this.state.selectedClass)?null:
-                  <div>                  
-                  <Attendance diemdanh={this.state.diemdanh} maLop={this.state.selectedClass} currentClass={this.state.currentClass}/>
-                  <Row type='flex' justify='center'>
-                  <Button onClick={()=>this.handleExportXls()} >Export to xls</Button>
-                  </Row>
-                  </div>
+                  _.isNil(this.state.selectedClass) ? null :
+                    <div>
+                      <Attendance diemdanh={this.state.diemdanh} maLop={this.state.selectedClass} currentClass={this.state.currentClass} />
+                      <Row type='flex' justify='center'>
+                        <Button onClick={() => this.handleExportXls()} >Export to xls</Button>
+                      </Row>
+                    </div>
                 }
               </Row>
-              
+
             </Content>
           </Layout>
         </Layout>

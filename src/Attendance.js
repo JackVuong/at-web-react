@@ -53,13 +53,24 @@ class Attendance extends Component {
     }
 
     render() {
-        const data = _.groupBy(_.filter(this.props.diemdanh.Lop, ['maLop', this.props.maLop]), 'mssv')
+        let data
+        if(_.isNil(this.props.currentClass.eventName)) {
+            data = _.groupBy(_.filter(this.props.diemdanh.Lop, ['maLop', this.props.maLop]), 'mssv')
+        }
+        else {
+            data = _.groupBy(_.filter(this.props.diemdanh.SuKien, ['maSuKien', _.toString(this.props.maLop)]), 'mssv')
+        }
         const DataSource = this.getDataSource(data)
         return (
             <div style={{ marginTop: 20 }}>
                 <Row type='flex' style={{ height: '100%' }} >
-
-                    <label style={{ fontSize: 25 }}>{this.props.currentClass.tenMH} nhóm {this.props.currentClass.nhomMH} tổ {this.props.currentClass.toMH}</label>
+                    {
+                        _.isNil(this.props.currentClass.eventName)?
+                        <label style={{ fontSize: 25 }}>{this.props.currentClass.tenMH} nhóm {this.props.currentClass.nhomMH} tổ {this.props.currentClass.toMH}</label>
+                        :
+                        <label style={{ fontSize: 25 }}>{this.props.currentClass.eventName} - {this.props.currentClass.place}</label>
+                    }
+                    
                     
                         <div>
                             <Tooltip title="Edit this class">
