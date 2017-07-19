@@ -10,6 +10,7 @@ import user from './user.png'
 import firebase from './firebase'
 import { getData, update, getLastIndex } from './firebase'
 import CreateSubjectForm from './CreateSubjectForm'
+import CreateEventForm from './CreateEventForm'
 import CreateClassForm from './CreateClass'
 import Attendance from './Attendance'
 const { Header, Content, Sider } = Layout
@@ -99,6 +100,12 @@ class MainPage extends Component {
     });
   }
 
+  showModalCreateEvent = () => {
+    this.setState({
+      visiblePopupCreateEvent: true,
+    });
+  }
+
   handleSaveSubject = () => {
     const form = this.form;
     form.validateFields((err, values) => {
@@ -124,6 +131,37 @@ class MainPage extends Component {
       subjects: {
         ...this.state.subjects,
         [newIndex]: newSubject
+      }
+    });
+    success()
+  }
+
+  handleSaveEvent = () => {
+    const form = this.form3;
+    form.validateFields((err, values) => {
+      if (err) {
+        return;
+      }
+      form.resetFields();
+      getLastIndex(`SuKien`).then((lastIndex) => this.addNewEvent(lastIndex, values.eventName, values.place))
+      this.setState({
+        visible: false,
+      });
+    });
+  }
+
+  addNewEvent = (lastIndex, name, place) => {
+    let newIndex = parseInt(lastIndex) + 1
+    let newEvent = {
+      tenSuKien: name,
+      diaDiem: place,
+      key:lastIndex,
+    }
+    update(`SuKien/${newIndex}`, newEvent)
+    this.setState({
+      events: {
+        ...this.state.events,
+        [newIndex]: newEvent
       }
     });
     success()
@@ -173,6 +211,14 @@ class MainPage extends Component {
     });
   }
 
+  handleCancelCreateEvent = (e) => {
+    const form = this.form3;
+    form.resetFields();
+    this.setState({
+      visiblePopupCreateEvent: false,
+    });
+  }
+
   onCancel = (e) => {
     const form = this.form2;
     form.resetFields();
@@ -188,6 +234,10 @@ class MainPage extends Component {
 
   saveForm2Ref = (form2) => {
     this.form2 = form2;
+  }
+
+  saveFormRef3 = (form3) => {
+    this.form3 = form3;
   }
 
   handleUniqueCode = (rule, value, callback) => {
@@ -234,14 +284,22 @@ class MainPage extends Component {
             </Col>
             <Col>
               <Button type='primary' onClick={this.showModalCreateSubject} style={{ height: 40, fontSize: 15 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add subject</Button>
-
+              
               <Button type='primary' onClick={this.showModalCreateClass} style={{ height: 40, fontSize: 15, marginLeft: 20 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add Class</Button>
+              <Button type='primary' onClick={this.showModalCreateEvent} style={{ height: 40, fontSize: 15 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add Event</Button>
               <CreateSubjectForm
                 ref={this.saveFormRef}
                 visible={this.state.visible}
                 onCancel={this.handleCancel}
                 onCreate={this.handleSaveSubject}
                 handleUniqueCode={this.handleUniqueCode}
+              />
+
+              <CreateEventForm
+                ref={this.saveFormRef3}
+                visible={this.state.visiblePopupCreateEvent}
+                onCancel={this.handleCancelCreateEvent}
+                onCreate={this.handleSaveEvent}
               />
 
               <CreateClassForm
