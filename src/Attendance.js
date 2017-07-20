@@ -1,9 +1,10 @@
 import logo from './logo.png'
-import { Row, Icon, Table, Tag, Tooltip, Button, Col } from 'antd'
+import { Row, Icon, Table, Tag, Tooltip, Button, Col, Popconfirm, message} from 'antd'
 import React, { Component } from 'react'
 import _ from 'lodash'
 import './events.css'
 import './table.css'
+import {update} from './firebase'
 
 const columns = [
     {
@@ -29,6 +30,21 @@ const columns = [
 class Attendance extends Component {
     constructor(props) {
         super(props);
+    }
+
+    confirm = (e)=> {
+        if(_.isNil(this.props.currentClass.eventName)) {
+            update(`Lop/${this.props.maLop}`,null)
+        }
+        else {
+            update(`SuKien/${this.props.maLop}`,null)
+        }
+        console.log(this.props)
+    message.success('Deleted');
+    }
+
+    cancel = (e)=> {
+    //message.error('Click on No');
     }
 
     getDate = (item) => {
@@ -73,11 +89,13 @@ class Attendance extends Component {
                     
                     
                         <div>
-                            <Tooltip title="Edit this class">
+                            <Tooltip title="Edit">
                                 <Button type="primary" ghost shape="circle" icon="edit" size='large' style={{ marginBottom: 10, marginLeft: 5 }} />
                             </Tooltip>
-                            <Tooltip title="Delete this class">
+                            <Tooltip title="Delete">
+                                <Popconfirm title="Are you sure delete this?" onConfirm={this.confirm} onCancel={this.cancel} okText="Yes" cancelText="No">
                                 <Button type="danger" ghost shape="circle" icon="close-circle" size='large' style={{ marginBottom: 10, marginLeft: 5 }} />
+                                </Popconfirm>
                             </Tooltip>
                         </div>
                     

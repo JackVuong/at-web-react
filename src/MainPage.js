@@ -24,6 +24,8 @@ const onClickProfileMenu = function ({ key }) {
     window.location.replace('/')
   }
 }
+const filterUndifinedObjects = (objects) =>
+    _.filter(objects, (o) => { return _.isObject(o) })
 
 const profileMenu = (
   <Menu onClick={onClickProfileMenu}>
@@ -34,7 +36,7 @@ const profileMenu = (
 );
 
 const success = () => {
-  message.success('Saved successfully')
+  message.success('Successfully created')
 };
 class MainPage extends Component {
   constructor(props) {
@@ -51,10 +53,10 @@ class MainPage extends Component {
   componentDidMount() {
     Promise.all([getData('MonHoc'), getData('Lop'), getData('DiemDanh'), getData('SuKien')])
       .then(([subjects, classes, diemdanh, events]) => this.setState({
-        subjects,
-        classes,
-        diemdanh,
-        events,
+        subjects: filterUndifinedObjects(subjects),
+        classes: filterUndifinedObjects(classes),
+        diemdanh: filterUndifinedObjects(diemdanh),
+        events: filterUndifinedObjects(events),
         loading: false
       }));
   }
@@ -143,9 +145,10 @@ class MainPage extends Component {
         return;
       }
       form.resetFields();
+      console.log(values)
       getLastIndex(`SuKien`).then((lastIndex) => this.addNewEvent(lastIndex, values.eventName, values.place))
       this.setState({
-        visible: false,
+        visiblePopupCreateEvent: false,
       });
     });
   }
@@ -155,7 +158,7 @@ class MainPage extends Component {
     let newEvent = {
       tenSuKien: name,
       diaDiem: place,
-      key:lastIndex,
+      key:newIndex,
     }
     update(`SuKien/${newIndex}`, newEvent)
     this.setState({
@@ -286,7 +289,7 @@ class MainPage extends Component {
               <Button type='primary' onClick={this.showModalCreateSubject} style={{ height: 40, fontSize: 15 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add subject</Button>
               
               <Button type='primary' onClick={this.showModalCreateClass} style={{ height: 40, fontSize: 15, marginLeft: 20 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add Class</Button>
-              <Button type='primary' onClick={this.showModalCreateEvent} style={{ height: 40, fontSize: 15 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add Event</Button>
+              <Button type='primary' onClick={this.showModalCreateEvent} style={{ height: 40, fontSize: 15,  marginLeft: 20 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add Event</Button>
               <CreateSubjectForm
                 ref={this.saveFormRef}
                 visible={this.state.visible}
@@ -312,7 +315,6 @@ class MainPage extends Component {
               />
             </Col>
             <Col style={{ paddingRight: 20 }}>
-              Luan Vuong
               <Dropdown overlay={profileMenu}>
                 <img alt='user' src={user} style={{ height: 70, padding: 7 }} />
               </Dropdown>
