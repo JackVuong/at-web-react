@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
-import { Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select, message, Dropdown } from 'antd'
+import { Form, Layout, Menu, Icon, Row, Col, Button, Input, Modal, InputNumber, Switch, Select, message, Dropdown, Popconfirm,Tooltip } from 'antd'
 import Loading from './Loading'
 import Forbidden from './Forbidden'
 import './App.css'
@@ -53,7 +53,7 @@ class MainPage extends Component {
   componentDidMount() {
     Promise.all([getData('MonHoc'), getData('Lop'), getData('DiemDanh'), getData('SuKien')])
       .then(([subjects, classes, diemdanh, events]) => this.setState({
-        subjects: filterUndifinedObjects(subjects),
+        subjects,
         classes: filterUndifinedObjects(classes),
         diemdanh: filterUndifinedObjects(diemdanh),
         events: filterUndifinedObjects(events),
@@ -67,23 +67,21 @@ class MainPage extends Component {
     });
   }
   onSelectClass = (e) => {
+    console.log(e)
     if(_.startsWith(e.key, 'event')) {
       const key = _.toNumber(_.trim(e.key,'event'))
-      const eventName =  _.find(this.state.events, ['key', key]).tenSuKien
-      const place = _.find(this.state.events, ['key', key]).diaDiem
-      const currentClass = {eventName,place}
+      const currentClass = _.find(this.state.events, ['key', key])
       this.setState({
         selectedClass: key,
         currentClass
       })
     } else {
-      const maMH = _.get(this.state.classes, `${e.key}.MaMH`)
-      const nhomMH = _.get(this.state.classes, `${e.key}.NhomMH`)
-      const toMH = _.get(this.state.classes, `${e.key}.ToMH`)
-      const tenMH = _.find(this.state.subjects, ['MaMH', maMH]).TenMH
-      const currentClass = { maMH, nhomMH, toMH, tenMH }
+      const currentClass = _.find(this.state.classes,['key',_.toNumber(e.key)])
+      const tenMH = _.find(this.state.subjects, ['MaMH', currentClass.MaMH]).TenMH
+
       this.setState({
         selectedClass: e.key,
+        currentSubjectName: tenMH,
         currentClass
       })
     }
@@ -269,10 +267,34 @@ class MainPage extends Component {
 
     let a = document.createElement('a');
     a.href = data_type + ', ' + table_html;
-    a.download = 'attendance_tracking_' + this.state.currentClass.tenMH + '_' + this.state.currentClass.maMH + '_nhom'
-      + this.state.currentClass.nhomMH + '_to_' + this.state.currentClass.toMH + '.xls';
+    a.download = 'attendance_tracking_' + this.state.currentSubjectName + '_' + this.state.currentClass.MaMH + '_nhom'
+      + this.state.currentClass.NhomMH + '_to_' + this.state.currentClass.ToMH + '.xls';
     a.click();
   }
+
+  confirm = (e)=> {
+        if(_.isNil(this.state.currentClass.tenSuKien)) {
+            update(`Lop/${this.state.selectedClass}`,null)
+            this.setState({
+              classes: _.reject(this.state.classes,['key',this.state.selectedClass]),
+              currentClass: undefined,
+              selectedClass: undefined
+            })
+        }
+        else {
+            update(`SuKien/${this.state.selectedClass}`,null)
+            this.setState({
+              events: _.reject(this.state.events,['key',this.state.selectedClass]),
+              currentClass: undefined,
+              selectedClass: undefined
+            })
+        }
+    message.success('Deleted');
+    }
+
+    cancel = (e)=> {
+    //message.error('Click on No');
+    }
 
   render() {
     if (_.isNil(firebase.auth().currentUser) || !firebase.auth().currentUser.emailVerified)
@@ -367,8 +389,31 @@ class MainPage extends Component {
           </Sider>
           <Layout>
             <Content style={{ margin: '0 16px' }}>
-
-
+            {
+              _.isObject(this.state.currentClass)?
+                <Row type='flex' style={{ height: '100%' }} >
+                    {
+                        _.isNil(this.state.currentClass.tenSuKien)?
+                        <label style={{ fontSize: 25 }}>{this.state.currentSubjectName} nhóm {this.state.currentClass.NhomMH} tổ {this.state.currentClass.ToMH}</label>
+                        :
+                        <label style={{ fontSize: 25 }}>{this.state.currentClass.tenSuKien} - {this.state.currentClass.diaDiem}</label>
+                    }
+                    
+                    
+                        <div>
+                            <Tooltip title="Edit">
+                                <Button type="primary" ghost shape="circle" icon="edit" size='large' style={{ marginBottom: 10, marginLeft: 5 }} />
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                                <Popconfirm title="Are you sure delete this?" onConfirm={this.confirm} onCancel={this.cancel} okText="Yes" cancelText="No">
+                                <Button type="danger" ghost shape="circle" icon="close-circle" size='large' style={{ marginBottom: 10, marginLeft: 5 }} />
+                                </Popconfirm>
+                            </Tooltip>
+                        </div>                   
+                </Row>
+                :null
+            }
+            
 
               <Row>
                 {

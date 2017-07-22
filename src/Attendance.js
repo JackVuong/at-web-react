@@ -1,5 +1,5 @@
 import logo from './logo.png'
-import { Row, Icon, Table, Tag, Tooltip, Button, Col, Popconfirm, message} from 'antd'
+import { Row, Icon, Table, Tag, Tooltip, Button, Col} from 'antd'
 import React, { Component } from 'react'
 import _ from 'lodash'
 import './events.css'
@@ -32,21 +32,6 @@ class Attendance extends Component {
         super(props);
     }
 
-    confirm = (e)=> {
-        if(_.isNil(this.props.currentClass.eventName)) {
-            update(`Lop/${this.props.maLop}`,null)
-        }
-        else {
-            update(`SuKien/${this.props.maLop}`,null)
-        }
-        console.log(this.props)
-    message.success('Deleted');
-    }
-
-    cancel = (e)=> {
-    //message.error('Click on No');
-    }
-
     getDate = (item) => {
         let date = ''
         _.forEach(item, (i) => {
@@ -70,37 +55,20 @@ class Attendance extends Component {
 
     render() {
         let data
-        if(_.isNil(this.props.currentClass.eventName)) {
-            data = _.groupBy(_.filter(this.props.diemdanh.Lop, ['maLop', this.props.maLop]), 'mssv')
+        if(_.isUndefined(this.props.currentClass)) {
+            return(
+                <div></div>
+                );
+        }
+        if(_.isNil(this.props.currentClass.tenSuKien)) {
+            data = _.groupBy(_.filter(this.props.diemdanh[0], ['maLop', this.props.maLop]), 'mssv')
         }
         else {
-            data = _.groupBy(_.filter(this.props.diemdanh.SuKien, ['maSuKien', _.toString(this.props.maLop)]), 'mssv')
+            data = _.groupBy(_.filter(this.props.diemdanh[1], ['maSuKien', _.toString(this.props.maLop)]), 'mssv')
         }
         const DataSource = this.getDataSource(data)
-        return (
+        return (         
             <div style={{ marginTop: 20 }}>
-                <Row type='flex' style={{ height: '100%' }} >
-                    {
-                        _.isNil(this.props.currentClass.eventName)?
-                        <label style={{ fontSize: 25 }}>{this.props.currentClass.tenMH} nhóm {this.props.currentClass.nhomMH} tổ {this.props.currentClass.toMH}</label>
-                        :
-                        <label style={{ fontSize: 25 }}>{this.props.currentClass.eventName} - {this.props.currentClass.place}</label>
-                    }
-                    
-                    
-                        <div>
-                            <Tooltip title="Edit">
-                                <Button type="primary" ghost shape="circle" icon="edit" size='large' style={{ marginBottom: 10, marginLeft: 5 }} />
-                            </Tooltip>
-                            <Tooltip title="Delete">
-                                <Popconfirm title="Are you sure delete this?" onConfirm={this.confirm} onCancel={this.cancel} okText="Yes" cancelText="No">
-                                <Button type="danger" ghost shape="circle" icon="close-circle" size='large' style={{ marginBottom: 10, marginLeft: 5 }} />
-                                </Popconfirm>
-                            </Tooltip>
-                        </div>
-                    
-
-                </Row>
                 <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
                     <div id='table_wrapper'>
                         <Table columns={columns} dataSource={DataSource} bordered />
