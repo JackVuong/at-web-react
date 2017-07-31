@@ -64,7 +64,7 @@ class LoginForm extends React.Component {
           {getFieldDecorator('email', {
             rules: [{ required: true, message: 'Please input your email!' }],
           })(
-            <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Email" />
+            <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Email" addonAfter="@it.tdt.edu.vn" />
           )}
         </FormItem>
         <FormItem>

@@ -89,12 +89,12 @@ class RegistrationForm extends React.Component {
                         >
                             {getFieldDecorator('email', {
                                 rules: [{
-                                    type: 'email', message: 'The input is not valid E-mail!',
+                                    //type: 'email', message: 'The input is not valid E-mail!',
                                 }, {
                                     required: true, message: 'Please input your E-mail!',
                                 }],
                             })(
-                                <Input prefix={<Icon type="mail" style={{ fontSize: 13 }} />} />
+                                <Input prefix={<Icon type="mail" style={{ fontSize: 13 }}/>} addonAfter="@it.tdt.edu.vn" />
                                 )}
                         </FormItem>
                         <FormItem

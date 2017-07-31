@@ -4,7 +4,7 @@ import _ from 'lodash';
 const FormItem = Form.Item;
 const CreateClassForm = Form.create()(
   (props) => {
-    const { visible, onCancelCreateClass, onCreateClass, form, subjects, validateGroupAndTeam } = props;
+    const { visible, onCancelCreateClass, onCreateClass, form, subjects, validateGroupAndTeam, listGiangVien } = props;
     const { getFieldDecorator } = form;
     return (
       <Modal
@@ -19,7 +19,7 @@ const CreateClassForm = Form.create()(
             <Col>
           <FormItem>
             {getFieldDecorator('hocky',{initialValue: 'HK1'})(
-              <Select style={{ width: 220 }}>
+              <Select style={{ width: 220 }} showSearch>
                 <Option value="HK1">Học kỳ 1</Option>
                 <Option value="HK2">Học kỳ 2</Option>
                 <Option value="HK3">Học kỳ hè</Option>
@@ -41,7 +41,11 @@ const CreateClassForm = Form.create()(
           <FormItem>
             {getFieldDecorator('monhoc',{
               rules: [{ required: true, message: 'Please select one subject!' }]})(
-              <Select placeholder="Chọn một môn học" style={{ width: 220 }} >
+              <Select placeholder="Chọn một môn học" style={{ width: 220 }} showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              >
+
                 {
                   _.map(subjects, (subject) => <Option value={subject.MaMH}>{subject.TenMH}</Option>)
                 }
@@ -51,10 +55,11 @@ const CreateClassForm = Form.create()(
           <FormItem>
             {getFieldDecorator('giangvien',{
               rules: [{ required: true, message: 'Please select one lecturer!' }]})(
-                <Select placeholder="Chọn một giảng viên" style={{ width: 220 }}>
-                  <Option value="0">Nguyễn Văn A</Option>
-                  <Option value="1">Nguyễn Văn B</Option>
-                  <Option value="2">Trần Thị C</Option>
+                <Select placeholder="Chọn một giảng viên" style={{ width: 220 }} showSearch>
+                  {
+                    _.map(listGiangVien, (giangvien) => <Option value={giangvien.email}>{giangvien.name}</Option>)
+                  }
+                  
                 </Select>
             )}
           </FormItem>

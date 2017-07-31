@@ -1,6 +1,6 @@
 import React from 'react';
 import logoOnly from './logo_only.png';
-import police from './police.png';
+import police from './No.png';
 export default () =>
   <div style={{
       marginTop:'50'
@@ -12,7 +12,7 @@ export default () =>
       flex: '1 1 auto',
       height: '100%'
     }}>
-      <img alt='police' src={police} style={{ width: '200', height: '220' }} />
+      <img alt='police' src={police} style={{ width: '200', height: '200' }} />
     </div>
     <div style={{
       display: 'flex',

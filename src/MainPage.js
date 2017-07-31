@@ -51,12 +51,13 @@ class MainPage extends Component {
     };
   }
   componentDidMount() {
-    Promise.all([getData('MonHoc'), getData('Lop'), getData('DiemDanh'), getData('SuKien')])
-      .then(([subjects, classes, diemdanh, events]) => this.setState({
+    Promise.all([getData('MonHoc'), getData('Lop'), getData('DiemDanh'), getData('SuKien'),getData('GiangVien')])
+      .then(([subjects, classes, diemdanh, events, listGiangVien]) => this.setState({
         subjects,
         classes: filterUndifinedObjects(classes),
         diemdanh: filterUndifinedObjects(diemdanh),
         events: filterUndifinedObjects(events),
+        listGiangVien: filterUndifinedObjects(listGiangVien),
         loading: false
       }));
   }
@@ -67,7 +68,6 @@ class MainPage extends Component {
     });
   }
   onSelectClass = (e) => {
-    console.log(e)
     if(_.startsWith(e.key, 'event')) {
       const key = _.toNumber(_.trim(e.key,'event'))
       const currentClass = _.find(this.state.events, ['key', key])
@@ -302,7 +302,7 @@ class MainPage extends Component {
     if (this.state.loading) return <Loading />;
     return (
       <Layout style={{ height: '100%' }}>
-        <Header style={{ background: '#fff  ', padding: 0 }}>
+        <Header style={{ background: '#f7f7f7', padding: 0 }}>
           <Row type='flex' justify='space-between' style={{ height: '100%' }}>
             <Col span={4}>
               <img alt='logo' src={logo} style={{ height: 70, padding: 7 }} />
@@ -334,6 +334,7 @@ class MainPage extends Component {
                 onCreateClass={this.handleSaveClass}
                 subjects={this.state.subjects}
                 validateGroupAndTeam={this.validateGroupAndTeam}
+                listGiangVien = {this.state.listGiangVien}
               />
             </Col>
             <Col style={{ paddingRight: 20 }}>
