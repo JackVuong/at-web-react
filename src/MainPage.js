@@ -260,7 +260,6 @@ class MainPage extends Component {
   }
 
   handleExportXls = () => {
-
     const data_type = 'data:application/vnd.ms-excel';
     const table_div = document.getElementById('table_wrapper');
     const table_html = table_div.outerHTML.replace(/ /g, '%20');
@@ -421,9 +420,9 @@ class MainPage extends Component {
                   _.isNil(this.state.selectedClass) ? null :
                     <div>
                       <Attendance diemdanh={this.state.diemdanh} maLop={this.state.selectedClass} currentClass={this.state.currentClass} />
-                      <Row type='flex' justify='center'>
+                      <Row type='flex' justify='center'>                  
                         <Button onClick={() => this.handleExportXls()} >Export to xls</Button>
-                      </Row>
+                      </Row>                     
                     </div>
                 }
               </Row>

@@ -52,10 +52,11 @@ class SearchPage extends Component {
     }
 
     componentDidMount() {
-        Promise.all([getData('MonHoc'), getData('Lop')])
-            .then(([subjects, classes]) => this.setState({
+        Promise.all([getData('MonHoc'), getData('Lop'), getData('SuKien')])
+            .then(([subjects, classes, events]) => this.setState({
                 subjects,
                 classes,
+                events,
                 loading: false
             }));
     }
@@ -153,7 +154,7 @@ class SearchPage extends Component {
                             </Button>
                         </Row>
                         {
-                            _.isNil(this.state.dataEvents) ?
+                            (_.isNil(this.state.dataEvents) || _.isEmpty(this.state.dataEvents))?
                                 null
                                 :
                                 <Row type='flex' justify='center' style={{ height: '100%', marginTop: 30 }}>
@@ -161,8 +162,8 @@ class SearchPage extends Component {
                                         {
                                             _.map(this.state.dataEvents, (event) =>
                                                 <Timeline.Item color="green">
-                                                    <p>{event.maLop}</p>
-                                                    <p>{event.diaDiem}</p>
+                                                    <p>{_.get(this.state.events, event.maSuKien).tenSuKien}</p>
+                                                    <p>{_.get(this.state.events, event.maSuKien).diaDiem}</p>
                                                     <p>{event.ngayGio}</p>
                                                 </Timeline.Item>
                                             )
