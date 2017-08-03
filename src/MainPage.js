@@ -143,7 +143,6 @@ class MainPage extends Component {
         return;
       }
       form.resetFields();
-      console.log(values)
       getLastIndex(`SuKien`).then((lastIndex) => this.addNewEvent(lastIndex, values.eventName, values.place))
       this.setState({
         visiblePopupCreateEvent: false,
@@ -292,13 +291,12 @@ class MainPage extends Component {
     }
 
     cancel = (e)=> {
-    //message.error('Click on No');
     }
 
-  render() {
+  render() {  
+    if (this.state.loading) return <Loading />;
     if (_.isNil(firebase.auth().currentUser) || !firebase.auth().currentUser.emailVerified)
       return <Forbidden />;
-    if (this.state.loading) return <Loading />;
     return (
       <Layout style={{ height: '100%' }}>
         <Header style={{ background: '#f7f7f7', padding: 0 }}>
