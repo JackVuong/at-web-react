@@ -23,7 +23,8 @@ class LoginForm extends React.Component {
           if(error){         
             this.setState({
               haveErrors: true,
-              message: error.message
+              message: error.message,
+              loading: false
             })
             return 
           }         
@@ -64,7 +65,7 @@ class LoginForm extends React.Component {
           {getFieldDecorator('email', {
             rules: [{ required: true, message: 'Please input your email!' }],
           })(
-            <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Email" addonAfter="@it.tdt.edu.vn" />
+            <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Email"/>
           )}
         </FormItem>
         <FormItem>
@@ -75,15 +76,8 @@ class LoginForm extends React.Component {
           )}
         </FormItem>
         <FormItem>
-          <Button style={{width: '100%'}} type="primary" htmlType="submit" className="login-form-button">
+          <Button style={{width: '100%'}} type="primary" htmlType="submit" className="login-form-button" loading={this.state.loading}>
             Log in
-          {
-            (this.state.loading)?
-            <Icon type="loading"/>
-            :
-            null
-          }
-          
           </Button>
             <br/>
             Or

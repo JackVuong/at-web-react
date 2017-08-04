@@ -94,7 +94,7 @@ class RegistrationForm extends React.Component {
                                     required: true, message: 'Please input your E-mail!',
                                 }],
                             })(
-                                <Input prefix={<Icon type="mail" style={{ fontSize: 13 }}/>} addonAfter="@it.tdt.edu.vn" />
+                                <Input prefix={<Icon type="mail" style={{ fontSize: 13 }}/>} />
                                 )}
                         </FormItem>
                         <FormItem

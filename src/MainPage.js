@@ -29,8 +29,7 @@ const filterUndifinedObjects = (objects) =>
 
 const profileMenu = (
   <Menu onClick={onClickProfileMenu}>
-    <Menu.Item key="info">Your profile</Menu.Item>
-    <Menu.Item key="settting">Setting</Menu.Item>
+    <Menu.Item key="info">{firebase.auth().currentUser.email.split('@')[0]}</Menu.Item>
     <Menu.Item key="signout">Sign out</Menu.Item>
   </Menu>
 );
@@ -47,17 +46,25 @@ class MainPage extends Component {
       loading: true,
       visible: false,
       visiblePopupCreateClass: false
-
     };
+    getData('admin').then((admin)=>this.admin=admin)
   }
   componentDidMount() {
+    if(!firebase.auth().currentUser) {
+      this.setState({
+        loading: false
+      })
+      return
+    }
     Promise.all([getData('MonHoc'), getData('Lop'), getData('DiemDanh'), getData('SuKien'),getData('GiangVien')])
       .then(([subjects, classes, diemdanh, events, listGiangVien]) => this.setState({
         subjects,
         classes: filterUndifinedObjects(classes),
         diemdanh: filterUndifinedObjects(diemdanh),
         events: filterUndifinedObjects(events),
+        yourEvents: _.filter(filterUndifinedObjects(events),['GV',firebase.auth().currentUser.email]),
         listGiangVien: filterUndifinedObjects(listGiangVien),
+        yourClasses: _.filter(filterUndifinedObjects(classes),['GV',firebase.auth().currentUser.email]),
         loading: false
       }));
   }
@@ -153,6 +160,7 @@ class MainPage extends Component {
   addNewEvent = (lastIndex, name, place) => {
     let newIndex = parseInt(lastIndex) + 1
     let newEvent = {
+      GV: firebase.auth().currentUser.email,
       tenSuKien: name,
       diaDiem: place,
       key:newIndex,
@@ -161,6 +169,10 @@ class MainPage extends Component {
     this.setState({
       events: {
         ...this.state.events,
+        [newIndex]: newEvent
+      },
+      yourEvents: {
+        ...this.state.yourEvents,
         [newIndex]: newEvent
       }
     });
@@ -186,7 +198,7 @@ class MainPage extends Component {
     let newIndex = parseInt(lastIndex) + 1
     let newClass = {
       key: newIndex,
-      GV: values.giangvien,
+      GV: firebase.auth().currentUser.email,
       HocKy: values.hocky,
       MaMH: values.monhoc,
       NamHoc: values.namhoc,
@@ -197,6 +209,10 @@ class MainPage extends Component {
     this.setState({
       classes: {
         ...this.state.classes,
+        [newIndex]: newClass
+      },
+      yourClasses:{
+        ...this.state.yourClasses,
         [newIndex]: newClass
       }
     });
@@ -301,10 +317,10 @@ class MainPage extends Component {
       <Layout style={{ height: '100%' }}>
         <Header style={{ background: '#f7f7f7', padding: 0 }}>
           <Row type='flex' justify='space-between' style={{ height: '100%' }}>
-            <Col span={4}>
+            <Col span={6}>
               <img alt='logo' src={logo} style={{ height: 70, padding: 7 }} />
             </Col>
-            <Col>
+            <Col span={12}>
               <Button type='primary' onClick={this.showModalCreateSubject} style={{ height: 40, fontSize: 15 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add subject</Button>
               
               <Button type='primary' onClick={this.showModalCreateClass} style={{ height: 40, fontSize: 15, marginLeft: 20 }}><Icon type="plus-circle-o" style={{ fontSize: 18 }} />Add Class</Button>
@@ -334,11 +350,13 @@ class MainPage extends Component {
                 listGiangVien = {this.state.listGiangVien}
               />
             </Col>
-            <Col style={{ paddingRight: 20 }}>
+            <Col span={4}>
+              <h2 >Welcome {firebase.auth().currentUser.email.split('@')[0]}</h2>
+            </Col>
+            <Col span={6}>             
               <Dropdown overlay={profileMenu}>
-                <img alt='user' src={user} style={{ height: 70, padding: 7 }} />
+                <img alt='user' src={user} style={{ height: 70, padding: 7,marginLeft:100 }} />
               </Dropdown>
-
             </Col>
           </Row>
         </Header>
@@ -362,8 +380,8 @@ class MainPage extends Component {
               >
                 {
                   _.map(this.state.subjects, (subject) => <SubMenu key={subject.MaMH} title={<span>{subject.TenMH}</span>}>
-                    {
-                      _.map(_.filter(this.state.classes, ['MaMH', subject.MaMH]), (lop) => <Menu.Item key={lop.key}>Nhóm {lop.NhomMH} Tổ {lop.ToMH}</Menu.Item>)
+                    {                    
+                      _.map(_.filter(_.includes(this.admin,firebase.auth().currentUser.email)?this.state.classes:this.state.yourClasses, ['MaMH', subject.MaMH]), (lop) => <Menu.Item key={lop.key}>Nhóm {lop.NhomMH} Tổ {lop.ToMH}</Menu.Item>)
                     }
                   </SubMenu>)
                 }
@@ -373,7 +391,7 @@ class MainPage extends Component {
                 title={<span><Icon type="flag" /><span className="nav-text">Events </span></span>}
               >
                 {
-                  _.map(this.state.events, (event) => <Menu.Item key={'event'+event.key}> {event.tenSuKien}
+                  _.map(_.includes(this.admin,firebase.auth().currentUser.email)?this.state.events:this.state.yourEvents, (event) => <Menu.Item key={'event'+event.key}> {event.tenSuKien}
                   </Menu.Item>)
                 }
               </SubMenu>

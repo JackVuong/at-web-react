@@ -7,6 +7,7 @@ import Loading from './Loading';
 import { getData } from './firebase'
 import LoginForm from './signin'
 import ReCAPTCHA from 'react-google-recaptcha'
+import firebase from './firebase'
 const { Header, Content, Footer } = Layout;
 const WrappedLoginForm = Form.create()(LoginForm)
 const info = () => {
@@ -184,8 +185,16 @@ class SearchPage extends Component {
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>
                         Attendance Tracking ©2017 Created by dev team.
-                        <a href="/#/signin"> Signin</a> or
-                        <a href="/#/register"> register now!</a>
+                        {
+                            firebase.auth().currentUser?
+                            <a href="/#/home"> Home page</a>
+                            :
+                            <div>
+                            <a href="/#/signin"> Signin</a> or
+                            <a href="/#/register"> register now!</a>
+                            </div>
+                        }
+                        
                    </Footer>
                 </Layout>
             </Layout>);

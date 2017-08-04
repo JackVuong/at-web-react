@@ -53,17 +53,6 @@ const CreateClassForm = Form.create()(
             )}
           </FormItem>
           <FormItem>
-            {getFieldDecorator('giangvien',{
-              rules: [{ required: true, message: 'Please select one lecturer!' }]})(
-                <Select placeholder="Chọn một giảng viên" style={{ width: 220 }} showSearch>
-                  {
-                    _.map(listGiangVien, (giangvien) => <Option value={giangvien.email}>{giangvien.name}</Option>)
-                  }
-                  
-                </Select>
-            )}
-          </FormItem>
-          <FormItem>
             Nhóm
             {getFieldDecorator('nhom',{initialValue: 1,
               rules: [{ validator: validateGroupAndTeam }]})(
