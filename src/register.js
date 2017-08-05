@@ -89,7 +89,7 @@ class RegistrationForm extends React.Component {
                         >
                             {getFieldDecorator('email', {
                                 rules: [{
-                                    //type: 'email', message: 'The input is not valid E-mail!',
+                                    type: 'email', message: 'The input is not valid E-mail!',
                                 }, {
                                     required: true, message: 'Please input your E-mail!',
                                 }],
@@ -128,24 +128,7 @@ class RegistrationForm extends React.Component {
           )}
         </FormItem>
 
-                        <FormItem
-                            {...formItemLayout}
-                            label={(
-                                <span>
-                                    Name&nbsp;
-              <Tooltip title="Your full name?">
-                                        <Icon type="question-circle-o" />
-                                    </Tooltip>
-                                </span>
-                            )}
-                            hasFeedback
-                        >
-                            {getFieldDecorator('fullname', {
-                                rules: [{ required: true, message: 'Please input your name!', whitespace: true }],
-                            })(
-                                <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} />
-                                )}
-                        </FormItem>
+                        
                         
                         <FormItem {...tailFormItemLayout} style={{ marginBottom: 8 }}>
                             {getFieldDecorator('agreement', {

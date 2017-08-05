@@ -82,9 +82,9 @@ class SearchPage extends Component {
     getDataSource = (data,studentId) => {
         const filterData = _.filter(data,['mssv',studentId])
         let dataSource = []
-         _.forEach(filterData, (item) => {           
+         _.forEach(filterData, (item) => {         
              let object = {
-                 TenMH : _.get(this.state.classes,`${item.maLop}.TenMH`),
+                 TenMH : _.find(this.state.subjects,['MaMH',_.get(this.state.classes,`${item.maLop}.MaMH`)]).TenMH,
                  NhomMH: _.get(this.state.classes,`${item.maLop}.NhomMH`),
                  ToMH: _.get(this.state.classes,`${item.maLop}.ToMH`),
                  ngayGio: item.ngayGio

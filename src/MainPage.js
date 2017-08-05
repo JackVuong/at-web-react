@@ -29,7 +29,7 @@ const filterUndifinedObjects = (objects) =>
 
 const profileMenu = (
   <Menu onClick={onClickProfileMenu}>
-    <Menu.Item key="info">{firebase.auth().currentUser.email.split('@')[0]}</Menu.Item>
+    <Menu.Item key="info">Profile</Menu.Item>
     <Menu.Item key="signout">Sign out</Menu.Item>
   </Menu>
 );
@@ -49,25 +49,7 @@ class MainPage extends Component {
     };
     getData('admin').then((admin)=>this.admin=admin)
   }
-  componentDidMount() {
-    if(!firebase.auth().currentUser) {
-      this.setState({
-        loading: false
-      })
-      return
-    }
-    Promise.all([getData('MonHoc'), getData('Lop'), getData('DiemDanh'), getData('SuKien'),getData('GiangVien')])
-      .then(([subjects, classes, diemdanh, events, listGiangVien]) => this.setState({
-        subjects,
-        classes: filterUndifinedObjects(classes),
-        diemdanh: filterUndifinedObjects(diemdanh),
-        events: filterUndifinedObjects(events),
-        yourEvents: _.filter(filterUndifinedObjects(events),['GV',firebase.auth().currentUser.email]),
-        listGiangVien: filterUndifinedObjects(listGiangVien),
-        yourClasses: _.filter(filterUndifinedObjects(classes),['GV',firebase.auth().currentUser.email]),
-        loading: false
-      }));
-  }
+  
   onCollapse = (collapsed) => {
     this.setState({
       collapsed,
@@ -308,6 +290,27 @@ class MainPage extends Component {
 
     cancel = (e)=> {
     }
+  componentWillMount() {
+    
+  }
+
+  componentDidMount() {
+    if(_.isNil(firebase.auth().currentUser)){
+      this.setState({loading:false})
+    }
+    
+    Promise.all([getData('MonHoc'), getData('Lop'), getData('DiemDanh'), getData('SuKien'),getData('GiangVien')])
+      .then(([subjects, classes, diemdanh, events, listGiangVien]) => this.setState({
+        subjects,
+        classes: filterUndifinedObjects(classes),
+        diemdanh: filterUndifinedObjects(diemdanh),
+        events: filterUndifinedObjects(events),
+        yourEvents: _.filter(filterUndifinedObjects(events),['GV',firebase.auth().currentUser.email]),
+        listGiangVien: filterUndifinedObjects(listGiangVien),
+        yourClasses: _.filter(filterUndifinedObjects(classes),['GV',firebase.auth().currentUser.email]),
+        loading: false
+      }));
+  } 
 
   render() {  
     if (this.state.loading) return <Loading />;
@@ -350,9 +353,7 @@ class MainPage extends Component {
                 listGiangVien = {this.state.listGiangVien}
               />
             </Col>
-            <Col span={4}>
-              <h2 >Welcome {firebase.auth().currentUser.email.split('@')[0]}</h2>
-            </Col>
+            
             <Col span={6}>             
               <Dropdown overlay={profileMenu}>
                 <img alt='user' src={user} style={{ height: 70, padding: 7,marginLeft:100 }} />
