@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import './ant.css'
 import firebase from './firebase'
-import { Form, Input, Tooltip, Icon, Card, Select, Row, Col, Checkbox, Button, AutoComplete } from 'antd';
+import { Form, Input, Tooltip, Icon, Card, Select, Row, Col, Checkbox, Button, AutoComplete, message} from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 const AutoCompleteOption = AutoComplete.Option;
-
+const success = () => {
+  message.success('Email Verification Sent!')
+};
 class RegistrationForm extends React.Component {
     state = {
         confirmDirty: false,
@@ -15,18 +17,20 @@ class RegistrationForm extends React.Component {
         e.preventDefault();
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
-                firebase.auth().createUserWithEmailAndPassword(values.email, values.password).catch(function (error) {
+                firebase.auth().createUserWithEmailAndPassword(values.email, values.password).then(()=>{
+                    firebase.auth().currentUser.sendEmailVerification().then(function() {
+                        alert('Email Verification Sent!, Please check email to verify your account');
+                        });
+                }).catch(function (error) {
                     const errorCode = error.code;
-                    const errorMessage = error.message;
+                    const errorMessage = error.message;                     
                     if (errorCode == 'auth/weak-password') {
                         alert('The password is too weak.');
                     } else {
                         alert(errorMessage);
                     }
                 });
-                firebase.auth().currentUser.sendEmailVerification().then(function() {
-                alert('Email Verification Sent!');
-      });
+                
             }
         });
     }
